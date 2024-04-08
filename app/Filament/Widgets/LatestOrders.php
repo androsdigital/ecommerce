@@ -2,14 +2,15 @@
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Resources\OrderResource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use App\Filament\Resources\OrderResource;
 use Filament\Widgets\TableWidget as BaseWidget;
 
 class LatestOrders extends BaseWidget
 {
     protected static ?int $sort = 4;
+
     protected int|string|array $columnSpan = 'full';
 
     public function table(Table $table): Table

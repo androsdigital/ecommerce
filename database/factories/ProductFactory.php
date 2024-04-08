@@ -2,11 +2,11 @@
 
 namespace Database\Factories;
 
-use Exception;
-use App\Models\Product;
 use App\Models\Category;
-use Illuminate\Support\Str;
+use App\Models\Product;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 class ProductFactory extends Factory
 {
@@ -27,7 +27,7 @@ class ProductFactory extends Factory
         return [
             'category_id'           => $categories->random(),
             'name'                  => $this->faker->unique()->catchPhrase(),
-            'slug'                  => fn(array $attributes): string => Str::slug($attributes['name']),
+            'slug'                  => fn (array $attributes): string => Str::slug($attributes['name']),
             'description'           => $this->faker->paragraph(),
             'price'                 => $price,
             'price_before_discount' => $priceBeforeDiscount,

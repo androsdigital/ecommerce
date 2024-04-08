@@ -3,13 +3,14 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Order;
+use Filament\Widgets\ChartWidget;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
-use Filament\Widgets\ChartWidget;
 
 class RevenueForWeek extends ChartWidget
 {
     protected static ?int $sort = 3;
+
     protected static ?string $heading = 'Revenue for this week';
 
     protected function getData(): array
@@ -26,7 +27,7 @@ class RevenueForWeek extends ChartWidget
             'datasets' => [
                 [
                     'label' => 'Revenue for the week',
-                    'data' => $data->map(fn (TrendValue $value) => $value->aggregate),
+                    'data'  => $data->map(fn (TrendValue $value) => $value->aggregate),
                 ],
             ],
             'labels' => $data->map(fn (TrendValue $value) => $value->date),

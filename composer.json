@@ -54,6 +54,24 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
+        ],
+        "fixer": [
+            "./vendor/bin/pint"
+        ],
+        "linter": [
+            "./vendor/bin/pint --test"
+        ],
+        "test": [
+            "./vendor/bin/pest"
+        ],
+        "test-pipeline": [
+            "./vendor/bin/pest --stop-on-error --stop-on-failure --parallel"
+        ],
+        "analyse": [
+            "./vendor/bin/phpstan"
+        ],
+        "check": [
+            "composer test-pipeline && composer analyse && composer fixer"
         ]
     },
     "extra": {

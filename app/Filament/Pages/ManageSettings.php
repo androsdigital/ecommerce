@@ -10,6 +10,7 @@ use Filament\Pages\SettingsPage;
 class ManageSettings extends SettingsPage
 {
     protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
+    protected static ?string $navigationLabel = 'Configuración';
 
     protected static string $settings = GeneralSettings::class;
 
@@ -17,9 +18,12 @@ class ManageSettings extends SettingsPage
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('title'),
-                Forms\Components\TextInput::make('subTitle'),
+                Forms\Components\TextInput::make('title')
+                    ->label('Título'),
+                Forms\Components\TextInput::make('subTitle')
+                    ->label('Subtítulo'),
                 Forms\Components\Textarea::make('about')
+                    ->label('Acerca de')
                     ->columnSpanFull(),
                 Forms\Components\FileUpload::make('logo')
                     ->columnSpanFull(),

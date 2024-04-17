@@ -11,7 +11,7 @@ class RevenueForWeek extends ChartWidget
 {
     protected static ?int $sort = 3;
 
-    protected static ?string $heading = 'Revenue for this week';
+    protected static ?string $heading = 'Ingresos de esta semana';
 
     protected function getData(): array
     {
@@ -26,7 +26,7 @@ class RevenueForWeek extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Revenue for the week',
+                    'label' => 'Ingresos de esta semana',
                     'data'  => $data->map(fn (TrendValue $value) => $value->aggregate),
                 ],
             ],

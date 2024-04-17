@@ -11,6 +11,7 @@ use Filament\Tables\Table;
 class OrderResource extends Resource
 {
     protected static ?string $model = Order::class;
+    protected static ?string $modelLabel = 'Pedido';
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
 
@@ -18,20 +19,17 @@ class OrderResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('product.name'),
+                Tables\Columns\TextColumn::make('product.name')
+                    ->label('Producto'),
                 Tables\Columns\TextColumn::make('price')
+                    ->label('Precio')
                     ->summarize(
                         Tables\Columns\Summarizers\Sum::make()->money()
                     )
                     ->money(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Fecha de creación')
                     ->dateTime(),
-            ])
-            ->filters([
-                //
-            ])
-            ->actions([
-                //
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -39,13 +37,6 @@ class OrderResource extends Resource
                 ]),
             ])
             ->defaultSort('id', 'desc');
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array

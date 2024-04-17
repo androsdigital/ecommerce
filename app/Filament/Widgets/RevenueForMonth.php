@@ -11,7 +11,7 @@ class RevenueForMonth extends ChartWidget
 {
     protected static ?int $sort = 2;
 
-    protected static ?string $heading = 'Revenue for this month';
+    protected static ?string $heading = 'Ingresos de este mes';
 
     protected function getData(): array
     {
@@ -26,7 +26,7 @@ class RevenueForMonth extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Revenue for the month',
+                    'label' => 'Ingresos de este mes',
                     'data'  => $data->map(fn (TrendValue $value) => $value->aggregate),
                 ],
             ],

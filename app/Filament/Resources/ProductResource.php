@@ -16,12 +16,14 @@ class ProductResource extends Resource
     protected static ?string $model = Product::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-bolt';
+    protected static ?string $modelLabel = 'Producto';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label('Nombre')
                     ->required()
                     ->live(onBlur: true)
                     ->afterStateUpdated(fn (string $operation, $state, Forms\Set $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null),
@@ -31,17 +33,21 @@ class ProductResource extends Resource
                     ->required()
                     ->unique(Product::class, 'slug', ignoreRecord: true),
                 Forms\Components\Textarea::make('description')
+                    ->label('Descripción')
                     ->required()
                     ->columnSpanFull(),
                 Forms\Components\SpatieMediaLibraryFileUpload::make('photo')
+                    ->label('Foto')
                     ->columnSpanFull(),
                 Forms\Components\TextInput::make('price')
+                    ->label('Precio')
                     ->required()
                     ->numeric()
-                    ->step(0.01),
+                    ->step(100),
                 Forms\Components\TextInput::make('price_before_discount')
+                    ->label('Precio antes de descuento')
                     ->numeric()
-                    ->step(0.01),
+                    ->step(100),
             ]);
     }
 
@@ -49,14 +55,14 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Nombre'),
                 Tables\Columns\TextColumn::make('price')
+                    ->label('Precio')
                     ->money(),
                 Tables\Columns\TextColumn::make('price_before_discount')
+                    ->label('Precio antes de descuento')
                     ->money(),
-            ])
-            ->filters([
-                //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -66,13 +72,6 @@ class ProductResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array

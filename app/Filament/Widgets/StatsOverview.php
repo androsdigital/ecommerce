@@ -22,12 +22,12 @@ class StatsOverview extends BaseWidget
         }
 
         $icon = $differenceInPercentage > 0 ? 'trending-up' : 'trending-down';
-        $description = $differenceInPercentage > 0 ? 'increase' : 'decrease';
+        $description = $differenceInPercentage > 0 ? 'aumentan' : 'disminuyen';
         $color = $differenceInPercentage > 0 ? 'success' : 'danger';
 
         return [
-            Stat::make('New orders today', $ordersToday)
-                ->description($differenceInPercentage . '% ' . $description . ' since yeasterday')
+            Stat::make('Nuevos pedidos de hoy', $ordersToday)
+                ->description($differenceInPercentage . '% ' . $description . ' desde ayer')
                 ->descriptionIcon('heroicon-m-arrow-' . $icon)
                 ->color($color),
         ];

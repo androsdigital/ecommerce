@@ -9,6 +9,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 
@@ -62,13 +63,24 @@ class ProductResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nombre'),
+                    ->label('Nombre')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('price')
                     ->label('Precio')
                     ->money(),
                 Tables\Columns\TextColumn::make('price_before_discount')
                     ->label('Precio antes de descuento')
                     ->money(),
+                TextColumn::make('created_at')
+                    ->label('Creado en')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->label('Actualizado en')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

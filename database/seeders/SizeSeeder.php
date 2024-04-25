@@ -9,7 +9,7 @@ class SizeSeeder extends Seeder
 {
     public function run(): void
     {
-        $sizes = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'];
+        $sizes = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'unisize', 'no-size'];
 
         foreach ($sizes as $size) {
             Size::create([

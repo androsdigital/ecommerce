@@ -2,11 +2,16 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class InventoryItem extends Pivot
 {
+    use HasFactory;
+
+    protected $table = 'inventory_items';
+
     public function size(): BelongsTo
     {
         return $this->belongsTo(Size::class);

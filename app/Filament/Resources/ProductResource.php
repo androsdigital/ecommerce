@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Models\Product;
 use Filament\Forms;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -34,6 +35,28 @@ class ProductResource extends Resource
                     ->required()
                     ->live(onBlur: true)
                     ->afterStateUpdated(fn (string $operation, $state, Forms\Set $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null),
+                Forms\Components\Repeater::make('inventoryItems')
+                    ->label('Inventario')
+                    ->addActionLabel('Agregar elemento')
+                    ->relationship()
+                    ->deleteAction(
+                        fn (Action $action) => $action->requiresConfirmation()->label('Esta acción eliminará el elemento del inventario.'),
+                    )
+                    ->defaultItems(0)
+                    ->schema([
+                        Select::make('size_id')
+                            ->label('Talla')
+                            ->relationship('size', 'name')
+                            ->required(),
+                        Select::make('color_id')
+                            ->label('Color')
+                            ->relationship('color', 'name')
+                            ->required(),
+                        Forms\Components\TextInput::make('quantity')
+                            ->label('Cantidad')
+                            ->required()
+                            ->numeric(),
+                    ]),
                 Forms\Components\TextInput::make('slug')
                     ->disabled()
                     ->dehydrated()
@@ -64,7 +87,12 @@ class ProductResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nombre')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('category.name')
+                    ->label('Categoría')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('price')
                     ->label('Precio')
                     ->money(),
@@ -81,6 +109,9 @@ class ProductResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('quantity')
+                    ->label('Cantidad')
+                    ->getStateUsing(fn (Product $product) => $product->inventoryItems->sum('quantity')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

@@ -64,11 +64,16 @@ class Product extends Model implements HasMedia
 
     public function size(): BelongsToMany
     {
-        return $this->belongsToMany(Size::class, 'product_size')->withPivot('quantity');
+        return $this->belongsToMany(Size::class, 'inventory_items')->withPivot('quantity');
     }
 
-    public function productSizes(): HasMany
+    public function color(): BelongsToMany
     {
-        return $this->hasMany(ProductSize::class);
+        return $this->belongsToMany(Color::class, 'inventory_items')->withPivot('quantity');
+    }
+
+    public function inventoryItems(): HasMany
+    {
+        return $this->hasMany(InventoryItem::class);
     }
 }

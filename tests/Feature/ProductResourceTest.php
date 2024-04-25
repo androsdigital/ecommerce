@@ -5,7 +5,10 @@ use App\Filament\Resources\ProductResource\Pages\CreateProduct;
 use App\Filament\Resources\ProductResource\Pages\EditProduct;
 use App\Filament\Resources\ProductResource\Pages\ListProducts;
 use App\Models\Category;
+use App\Models\Color;
+use App\Models\InventoryItem;
 use App\Models\Product;
+use App\Models\Size;
 use Filament\Actions\DeleteAction;
 
 use function Pest\Livewire\livewire;
@@ -27,13 +30,18 @@ it('can list products', function () {
         ->assertCanSeeTableRecords($products)
         ->assertCountTableRecords(10)
         ->assertCanRenderTableColumn('name')
+        ->assertCanRenderTableColumn('category.name')
         ->assertCanRenderTableColumn('price')
         ->assertCanRenderTableColumn('price_before_discount')
+        ->assertCanRenderTableColumn('quantity')
         ->assertCanNotRenderTableColumn('created_at')
         ->assertCanNotRenderTableColumn('updated_at')
         ->searchTable($products->first()->name)
         ->assertCanSeeTableRecords($products->where('name', $products->first()->name))
-        ->assertCountTableRecords($products->where('name', $products->first()->name)->count());
+        ->assertCountTableRecords($products->where('name', $products->first()->name)->count())
+        ->searchTable($products->first()->category->name)
+        ->assertCanSeeTableRecords($products->where('category_id', $products->first()->category_id))
+        ->assertCountTableRecords($products->where('category_id', $products->first()->category_id)->count());
 
     $this->assertAuthenticated();
 });
@@ -45,6 +53,8 @@ it('can render create page', function () {
 });
 
 it('can create a product', function () {
+    $size = Size::factory()->create();
+    $color = Color::factory()->create();
     $category = Category::factory()->create();
     $newData = Product::factory()->for($category)->make();
 
@@ -52,14 +62,23 @@ it('can create a product', function () {
         ->assertFormExists()
         ->assertFormFieldExists('name')
         ->assertFormFieldExists('category_id')
+        ->assertFormFieldExists('inventoryItems')
         ->assertFormFieldExists('slug')
         ->assertFormFieldExists('description')
         ->assertFormFieldExists('photo')
         ->assertFormFieldExists('price')
         ->assertFormFieldExists('price_before_discount')
+        ->set('data.inventoryItems')
         ->fillForm([
-            'category_id'           => $newData->category_id,
-            'name'                  => $newData->name,
+            'category_id'    => $newData->category_id,
+            'name'           => $newData->name,
+            'inventoryItems' => [
+                [
+                    'color_id' => $size->id,
+                    'size_id'  => $color->id,
+                    'quantity' => 10,
+                ],
+            ],
             'slug'                  => $newData->slug,
             'description'           => $newData->description,
             'photo'                 => $newData->photo,
@@ -76,6 +95,13 @@ it('can create a product', function () {
         'description'           => $newData->description,
         'price'                 => $newData->price,
         'price_before_discount' => $newData->price_before_discount,
+    ]);
+
+    $this->assertDatabaseHas('inventory_items', [
+        'product_id' => Product::query()->where('name', $newData->name)->first()->id,
+        'color_id'   => $color->id,
+        'size_id'    => $size->id,
+        'quantity'   => 10,
     ]);
 
     $this->assertAuthenticated();
@@ -111,14 +137,18 @@ it('can render edit page', function () {
 });
 
 it('can retrieve data', function () {
+    $size = Size::factory()->create();
+    $color = Color::factory()->create();
     $category = Category::factory()->create();
     $product = Product::factory()->for($category)->create();
+    $inventoryItem = InventoryItem::factory()->for($size)->for($color)->for($product)->create();
 
     livewire(EditProduct::class, [
         'record' => $product->getRouteKey(),
     ])
         ->assertFormSet([
             'name'                  => $product->name,
+            'inventoryItems'        => ['record-2' => $inventoryItem->toArray()],
             'slug'                  => $product->slug,
             'category_id'           => $product->category_id,
             'description'           => $product->description,
@@ -131,13 +161,10 @@ it('can retrieve data', function () {
 
 it('can save a product', function () {
     $category = Category::factory()->create();
-    $product = Product::factory()
-        ->for($category)
-        ->create();
-
-    $newData = Product::factory()
-        ->for($category)
-        ->make();
+    $product = Product::factory()->for($category)->create();
+    $size = Size::factory()->create();
+    $color = Color::factory()->create();
+    $newData = Product::factory()->for($category)->make();
 
     livewire(EditProduct::class, [
         'record' => $product->getRouteKey(),
@@ -145,14 +172,23 @@ it('can save a product', function () {
         ->assertFormExists()
         ->assertFormFieldExists('name')
         ->assertFormFieldExists('category_id')
+        ->assertFormFieldExists('inventoryItems')
         ->assertFormFieldExists('slug')
         ->assertFormFieldExists('description')
         ->assertFormFieldExists('photo')
         ->assertFormFieldExists('price')
         ->assertFormFieldExists('price_before_discount')
+        ->set('data.inventoryItems')
         ->fillForm([
-            'category_id'           => $newData->category_id,
-            'name'                  => $newData->name,
+            'category_id'    => $newData->category_id,
+            'name'           => $newData->name,
+            'inventoryItems' => [
+                [
+                    'color_id' => $color->id,
+                    'size_id'  => $size->id,
+                    'quantity' => 10,
+                ],
+            ],
             'slug'                  => $newData->slug,
             'description'           => $newData->description,
             'photo'                 => $newData->photo,
@@ -161,6 +197,22 @@ it('can save a product', function () {
         ])
         ->call('save')
         ->assertHasNoFormErrors();
+
+    $this->assertDatabaseHas(Product::class, [
+        'category_id'           => $newData->category_id,
+        'name'                  => $newData->name,
+        'slug'                  => $newData->slug,
+        'description'           => $newData->description,
+        'price'                 => $newData->price,
+        'price_before_discount' => $newData->price_before_discount,
+    ]);
+
+    $this->assertDatabaseHas('inventory_items', [
+        'product_id' => Product::query()->where('name', $newData->name)->first()->id,
+        'color_id'   => $color->id,
+        'size_id'    => $size->id,
+        'quantity'   => 10,
+    ]);
 });
 
 it('can validate edit input', function () {

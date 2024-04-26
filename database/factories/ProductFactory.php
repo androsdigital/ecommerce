@@ -31,6 +31,24 @@ class ProductFactory extends Factory
             'description'           => $this->faker->paragraph(),
             'price'                 => $price,
             'price_before_discount' => $priceBeforeDiscount,
+            'features'              => [
+                [
+                    'name'  => 'Material',
+                    'value' => $this->faker->word(),
+                ],
+                [
+                    'name'  => 'Weight',
+                    'value' => $this->faker->randomFloat(2, 0.1, 10),
+                ],
+            ],
+            'comments' => [
+                [
+                    'comment' => $this->faker->paragraph(),
+                ],
+                [
+                    'comment' => $this->faker->paragraph(),
+                ],
+            ],
         ];
     }
 

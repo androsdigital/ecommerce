@@ -16,6 +16,8 @@ return new class extends Migration
             $table->text('description');
             $table->integer('price');
             $table->integer('price_before_discount')->nullable();
+            $table->json('features')->nullable();
+            $table->json('comments')->nullable();
             $table->timestamps();
         });
     }

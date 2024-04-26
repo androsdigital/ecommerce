@@ -57,6 +57,27 @@ class ProductResource extends Resource
                             ->required()
                             ->numeric(),
                     ]),
+                Forms\Components\Repeater::make('features')
+                    ->label('Características')
+                    ->addActionLabel('Agregar característica')
+                    ->defaultItems(0)
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->label('Nombre')
+                            ->required(),
+                        Forms\Components\TextInput::make('value')
+                            ->label('Valor')
+                            ->required(),
+                    ]),
+                Forms\Components\Repeater::make('comments')
+                    ->label('Comentarios')
+                    ->addActionLabel('Agregar comentario')
+                    ->defaultItems(0)
+                    ->schema([
+                        Forms\Components\Textarea::make('comment')
+                            ->label('Comentario')
+                            ->required(),
+                    ]),
                 Forms\Components\TextInput::make('slug')
                     ->disabled()
                     ->dehydrated()

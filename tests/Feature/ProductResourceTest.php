@@ -68,6 +68,8 @@ it('can create a product', function () {
         ->assertFormFieldExists('photo')
         ->assertFormFieldExists('price')
         ->assertFormFieldExists('price_before_discount')
+        ->assertFormFieldExists('features')
+        ->assertFormFieldExists('comments')
         ->set('data.inventoryItems')
         ->fillForm([
             'category_id'    => $newData->category_id,
@@ -84,6 +86,8 @@ it('can create a product', function () {
             'photo'                 => $newData->photo,
             'price'                 => $newData->price / 100,
             'price_before_discount' => $newData->price_before_discount / 100,
+            'features'              => $newData->features,
+            'comments'              => $newData->comments,
         ])
         ->call('create')
         ->assertHasNoFormErrors();
@@ -104,11 +108,17 @@ it('can create a product', function () {
         'quantity'   => 10,
     ]);
 
+    $product = Product::query()->where('slug', $newData->slug)->first();
+
+    $this->assertEquals($newData->features, $product->features);
+    $this->assertEquals($newData->comments, $product->comments);
+
     $this->assertAuthenticated();
 });
 
 it('can validate create input', function () {
     livewire(CreateProduct::class)
+        ->set('features')
         ->fillForm([
             'name'           => null,
             'category_id'    => null,
@@ -121,6 +131,17 @@ it('can validate create input', function () {
                     'quantity' => null,
                 ],
             ],
+            'features' => [
+                [
+                    'name'  => null,
+                    'value' => null,
+                ],
+            ],
+            'comments' => [
+                [
+                    'comment' => null,
+                ],
+            ],
         ])
         ->call('create')
         ->assertHasFormErrors([
@@ -131,6 +152,9 @@ it('can validate create input', function () {
             'inventoryItems.0.color_id' => 'required',
             'inventoryItems.0.size_id'  => 'required',
             'inventoryItems.0.quantity' => 'required',
+            'features.0.name'           => 'required',
+            'features.0.value'          => 'required',
+            'comments.0.comment'        => 'required',
         ]);
 
     $this->assertAuthenticated();
@@ -164,6 +188,14 @@ it('can retrieve data', function () {
             'description'           => $product->description,
             'price'                 => $product->price,
             'price_before_discount' => $product->price_before_discount,
+        ])
+        ->assertSeeHtml([ // This is because livewire render with UUID keys
+            $product->features[0]['name'],
+            $product->features[0]['value'],
+            $product->comments[0]['comment'],
+            $product->features[1]['name'],
+            $product->features[1]['value'],
+            $product->comments[1]['comment'],
         ]);
 
     $this->assertAuthenticated();
@@ -204,6 +236,8 @@ it('can save a product', function () {
             'photo'                 => $newData->photo,
             'price'                 => $newData->price / 100,
             'price_before_discount' => $newData->price_before_discount / 100,
+            'features'              => $newData->features,
+            'comments'              => $newData->comments,
         ])
         ->call('save')
         ->assertHasNoFormErrors();
@@ -223,6 +257,15 @@ it('can save a product', function () {
         'size_id'    => $size->id,
         'quantity'   => 10,
     ]);
+
+    $product = Product::query()->where('slug', $newData->slug)->first();
+
+    $this->assertEquals($newData->features[0], $product->features[2]);
+    $this->assertEquals($newData->features[1], $product->features[3]);
+    $this->assertEquals($newData->comments[0], $product->comments[2]);
+    $this->assertEquals($newData->comments[1], $product->comments[3]);
+
+    $this->assertAuthenticated();
 });
 
 it('can validate edit input', function () {
@@ -244,6 +287,17 @@ it('can validate edit input', function () {
                     'quantity' => null,
                 ],
             ],
+            'features' => [
+                [
+                    'name'  => null,
+                    'value' => null,
+                ],
+            ],
+            'comments' => [
+                [
+                    'comment' => null,
+                ],
+            ],
         ])
         ->call('save')
         ->assertHasFormErrors([
@@ -254,6 +308,9 @@ it('can validate edit input', function () {
             'inventoryItems.0.color_id' => 'required',
             'inventoryItems.0.size_id'  => 'required',
             'inventoryItems.0.quantity' => 'required',
+            'features.0.name'           => 'required',
+            'features.0.value'          => 'required',
+            'comments.0.comment'        => 'required',
         ]);
 
     $this->assertAuthenticated();

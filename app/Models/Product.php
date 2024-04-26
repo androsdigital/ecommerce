@@ -25,6 +25,13 @@ class Product extends Model implements HasMedia
         'description',
         'price',
         'price_before_discount',
+        'features',
+        'comments',
+    ];
+
+    protected $casts = [
+        'features' => 'array',
+        'comments' => 'array',
     ];
 
     public function registerMediaConversions(?Media $media = null): void

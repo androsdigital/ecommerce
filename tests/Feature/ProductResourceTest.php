@@ -110,17 +110,27 @@ it('can create a product', function () {
 it('can validate create input', function () {
     livewire(CreateProduct::class)
         ->fillForm([
-            'name'        => null,
-            'category_id' => null,
-            'description' => null,
-            'price'       => null,
+            'name'           => null,
+            'category_id'    => null,
+            'description'    => null,
+            'price'          => null,
+            'inventoryItems' => [
+                [
+                    'color_id' => null,
+                    'size_id'  => null,
+                    'quantity' => null,
+                ],
+            ],
         ])
         ->call('create')
         ->assertHasFormErrors([
-            'name'        => 'required',
-            'category_id' => 'required',
-            'description' => 'required',
-            'price'       => 'required',
+            'name'                      => 'required',
+            'category_id'               => 'required',
+            'description'               => 'required',
+            'price'                     => 'required',
+            'inventoryItems.0.color_id' => 'required',
+            'inventoryItems.0.size_id'  => 'required',
+            'inventoryItems.0.quantity' => 'required',
         ]);
 
     $this->assertAuthenticated();
@@ -223,17 +233,27 @@ it('can validate edit input', function () {
         'record' => $product->getRouteKey(),
     ])
         ->fillForm([
-            'name'        => null,
-            'category_id' => null,
-            'description' => null,
-            'price'       => null,
+            'name'           => null,
+            'category_id'    => null,
+            'description'    => null,
+            'price'          => null,
+            'inventoryItems' => [
+                [
+                    'color_id' => null,
+                    'size_id'  => null,
+                    'quantity' => null,
+                ],
+            ],
         ])
         ->call('save')
         ->assertHasFormErrors([
-            'name'        => 'required',
-            'category_id' => 'required',
-            'description' => 'required',
-            'price'       => 'required',
+            'name'                      => 'required',
+            'category_id'               => 'required',
+            'description'               => 'required',
+            'price'                     => 'required',
+            'inventoryItems.0.color_id' => 'required',
+            'inventoryItems.0.size_id'  => 'required',
+            'inventoryItems.0.quantity' => 'required',
         ]);
 
     $this->assertAuthenticated();

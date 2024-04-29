@@ -2,14 +2,22 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ProductResource\Pages;
+use App\Filament\Resources\ProductResource\Pages\CreateProduct;
+use App\Filament\Resources\ProductResource\Pages\EditProduct;
+use App\Filament\Resources\ProductResource\Pages\ListProducts;
 use App\Models\Product;
-use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
@@ -30,12 +38,14 @@ class ProductResource extends Resource
                     ->label('Categoría')
                     ->relationship('category', 'name')
                     ->required(),
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->label('Nombre')
                     ->required()
                     ->live(onBlur: true)
-                    ->afterStateUpdated(fn (string $operation, $state, Forms\Set $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null),
-                Forms\Components\Repeater::make('inventoryItems')
+                    ->afterStateUpdated(
+                        fn (string $operation, $state, Set $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null
+                    ),
+                Repeater::make('inventoryItems')
                     ->label('Inventario')
                     ->addActionLabel('Agregar elemento')
                     ->relationship()
@@ -52,50 +62,50 @@ class ProductResource extends Resource
                             ->label('Color')
                             ->relationship('color', 'name')
                             ->required(),
-                        Forms\Components\TextInput::make('quantity')
+                        TextInput::make('quantity')
                             ->label('Cantidad')
                             ->required()
                             ->numeric(),
                     ]),
-                Forms\Components\Repeater::make('features')
+                Repeater::make('features')
                     ->label('Características')
                     ->addActionLabel('Agregar característica')
                     ->defaultItems(0)
                     ->schema([
-                        Forms\Components\TextInput::make('name')
+                        TextInput::make('name')
                             ->label('Nombre')
                             ->required(),
-                        Forms\Components\TextInput::make('value')
+                        TextInput::make('value')
                             ->label('Valor')
                             ->required(),
                     ]),
-                Forms\Components\Repeater::make('comments')
+                Repeater::make('comments')
                     ->label('Comentarios')
                     ->addActionLabel('Agregar comentario')
                     ->defaultItems(0)
                     ->schema([
-                        Forms\Components\Textarea::make('comment')
+                        Textarea::make('comment')
                             ->label('Comentario')
                             ->required(),
                     ]),
-                Forms\Components\TextInput::make('slug')
+                TextInput::make('slug')
                     ->disabled()
                     ->dehydrated()
                     ->required()
                     ->unique(Product::class, 'slug', ignoreRecord: true),
-                Forms\Components\Textarea::make('description')
+                Textarea::make('description')
                     ->label('Descripción')
                     ->required()
                     ->columnSpanFull(),
-                Forms\Components\SpatieMediaLibraryFileUpload::make('photo')
+                SpatieMediaLibraryFileUpload::make('photo')
                     ->label('Foto')
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('price')
+                TextInput::make('price')
                     ->label('Precio')
                     ->required()
                     ->numeric()
                     ->step(100),
-                Forms\Components\TextInput::make('price_before_discount')
+                TextInput::make('price_before_discount')
                     ->label('Precio antes de descuento')
                     ->numeric()
                     ->step(100),
@@ -106,18 +116,18 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label('Nombre')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('category.name')
+                TextColumn::make('category.name')
                     ->label('Categoría')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('price')
+                TextColumn::make('price')
                     ->label('Precio')
                     ->money(),
-                Tables\Columns\TextColumn::make('price_before_discount')
+                TextColumn::make('price_before_discount')
                     ->label('Precio antes de descuento')
                     ->money(),
                 TextColumn::make('created_at')
@@ -135,11 +145,11 @@ class ProductResource extends Resource
                     ->getStateUsing(fn (Product $product) => $product->inventoryItems->sum('quantity')),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -147,9 +157,9 @@ class ProductResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListProducts::route('/'),
-            'create' => Pages\CreateProduct::route('/create'),
-            'edit'   => Pages\EditProduct::route('/{record}/edit'),
+            'index'  => ListProducts::route('/'),
+            'create' => CreateProduct::route('/create'),
+            'edit'   => EditProduct::route('/{record}/edit'),
         ];
     }
 }

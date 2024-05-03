@@ -11,11 +11,11 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->foreignId('category_id')->constrained();
-            $table->string('name');
-            $table->string('slug');
-            $table->text('description');
+            $table->string('name', 255);
+            $table->string('slug', 255)->unique();
+            $table->text('description')->charset('binary');
             $table->integer('price');
-            $table->integer('price_before_discount')->nullable();
+            $table->integer('price_before_discount');
             $table->json('features')->nullable();
             $table->json('comments')->nullable();
             $table->timestamps();

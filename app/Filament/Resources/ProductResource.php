@@ -40,11 +40,24 @@ class ProductResource extends Resource
                     ->required(),
                 TextInput::make('name')
                     ->label('Nombre')
+                    ->maxLength(255)
                     ->required()
                     ->live(onBlur: true)
                     ->afterStateUpdated(
                         fn (string $operation, $state, Set $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null
                     ),
+                TextInput::make('slug')
+                    ->disabled()
+                    ->dehydrated()
+                    ->maxLength(255)
+                    ->required()
+                    ->unique(Product::class, 'slug', ignoreRecord: true),
+                Textarea::make('description')
+                    ->label('Descripción')
+                    ->minLength(30)
+                    ->maxLength(1000)
+                    ->required()
+                    ->columnSpanFull(),
                 Repeater::make('inventoryItems')
                     ->label('Inventario')
                     ->addActionLabel('Agregar elemento')
@@ -65,6 +78,9 @@ class ProductResource extends Resource
                         TextInput::make('quantity')
                             ->label('Cantidad')
                             ->required()
+                            ->integer()
+                            ->minValue(0)
+                            ->maxValue(9999)
                             ->numeric(),
                     ]),
                 Repeater::make('features')
@@ -74,9 +90,13 @@ class ProductResource extends Resource
                     ->schema([
                         TextInput::make('name')
                             ->label('Nombre')
-                            ->required(),
+                            ->minLength(2)
+                            ->maxLength(50)
+                            ->required()
+                            ->alpha(),
                         TextInput::make('value')
                             ->label('Valor')
+                            ->maxLength(500)
                             ->required(),
                     ]),
                 Repeater::make('comments')
@@ -86,29 +106,28 @@ class ProductResource extends Resource
                     ->schema([
                         Textarea::make('comment')
                             ->label('Comentario')
+                            ->minLength(30)
+                            ->maxLength(500)
                             ->required(),
                     ]),
-                TextInput::make('slug')
-                    ->disabled()
-                    ->dehydrated()
-                    ->required()
-                    ->unique(Product::class, 'slug', ignoreRecord: true),
-                Textarea::make('description')
-                    ->label('Descripción')
-                    ->required()
-                    ->columnSpanFull(),
                 SpatieMediaLibraryFileUpload::make('photo')
                     ->label('Foto')
                     ->columnSpanFull(),
                 TextInput::make('price')
                     ->label('Precio')
                     ->required()
-                    ->numeric()
-                    ->step(100),
+                    ->integer()
+                    ->minValue(0)
+                    ->maxValue(10000000)
+                    ->numeric(),
                 TextInput::make('price_before_discount')
                     ->label('Precio antes de descuento')
-                    ->numeric()
-                    ->step(100),
+                    ->default('price')
+                    ->gte('price')
+                    ->integer()
+                    ->minValue(0)
+                    ->maxValue(10000000)
+                    ->numeric(),
             ]);
     }
 

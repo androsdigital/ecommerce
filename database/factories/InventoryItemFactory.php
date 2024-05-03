@@ -2,9 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Color;
 use App\Models\InventoryItem;
-use App\Models\Size;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

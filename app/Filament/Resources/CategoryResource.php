@@ -32,6 +32,7 @@ class CategoryResource extends Resource
                 TextInput::make('name')
                     ->label('Nombre')
                     ->required()
+                    ->maxLength(255)
                     ->live(onBlur: true)
                     ->afterStateUpdated(fn (string $operation, $state, Set $set) => $operation === 'create'
                         ? $set('slug', Str::slug($state))
@@ -39,6 +40,7 @@ class CategoryResource extends Resource
                 TextInput::make('slug')
                     ->disabled()
                     ->dehydrated()
+                    ->maxLength(255)
                     ->required()
                     ->unique(Category::class, 'slug', ignoreRecord: true),
             ]);
@@ -49,8 +51,20 @@ class CategoryResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label('Nombre'),
+                    ->label('Nombre')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('slug'),
+                TextColumn::make('created_at')
+                    ->label('Creado en')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->label('Actualizado en')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->actions([
                 EditAction::make(),

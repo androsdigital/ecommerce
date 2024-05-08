@@ -47,8 +47,8 @@ it('can create a product', function () {
             'slug'                  => $newData->slug,
             'description'           => $newData->description,
             'photo'                 => $newData->photo,
-            'price'                 => $newData->price / 100,
-            'price_before_discount' => $newData->price_before_discount / 100,
+            'price'                 => $newData->price,
+            'price_before_discount' => $newData->price_before_discount,
             'features'              => $newData->features,
             'comments'              => $newData->comments,
         ])

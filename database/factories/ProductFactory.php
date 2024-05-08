@@ -21,7 +21,7 @@ class ProductFactory extends Factory
             $price = $this->faker->numberBetween($initPrice / 4, $initPrice / 2);
         } else {
             $price = $initPrice;
-            $priceBeforeDiscount = null;
+            $priceBeforeDiscount = $initPrice;
         }
 
         return [

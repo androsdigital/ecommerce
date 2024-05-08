@@ -37,7 +37,7 @@ it('can retrieve data', function () {
     ])
         ->assertFormSet([
             'name'                  => $product->name,
-            'inventoryItems'        => ['record-2' => $inventoryItem->toArray()],
+            'inventoryItems'        => ['record-1' => $inventoryItem->toArray()],
             'slug'                  => $product->slug,
             'category_id'           => $product->category_id,
             'description'           => $product->description,

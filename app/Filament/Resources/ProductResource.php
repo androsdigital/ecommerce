@@ -110,8 +110,13 @@ class ProductResource extends Resource
                             ->maxLength(500)
                             ->required(),
                     ]),
-                SpatieMediaLibraryFileUpload::make('photo')
-                    ->label('Foto')
+                SpatieMediaLibraryFileUpload::make('photos')
+                    ->label('Fotos')
+                    ->multiple()
+                    ->image()
+                    ->reorderable()
+                    ->maxFiles(10)
+                    ->maxSize(4000)
                     ->columnSpanFull(),
                 TextInput::make('price')
                     ->label('Precio')

@@ -32,7 +32,7 @@ it('can create a product', function () {
         ->assertFormExists()
         ->assertFormFieldExists('name')
         ->assertFormFieldExists('category_id')
-        ->assertFormFieldExists('inventoryItems')
+        ->assertFormFieldExists('stockItems')
         ->assertFormFieldExists('slug')
         ->assertFormFieldExists('description')
         ->assertFormFieldExists('photos')
@@ -40,11 +40,11 @@ it('can create a product', function () {
         ->assertFormFieldExists('price_before_discount')
         ->assertFormFieldExists('features')
         ->assertFormFieldExists('comments')
-        ->set('data.inventoryItems')
+        ->set('data.stockItems')
         ->fillForm([
-            'category_id'    => $newData->category_id,
-            'name'           => $newData->name,
-            'inventoryItems' => [
+            'category_id' => $newData->category_id,
+            'name'        => $newData->name,
+            'stockItems'  => [
                 [
                     'color_id' => $size->id,
                     'size_id'  => $color->id,
@@ -71,7 +71,7 @@ it('can create a product', function () {
         'price_before_discount' => $newData->price_before_discount,
     ]);
 
-    $this->assertDatabaseHas('inventory_items', [
+    $this->assertDatabaseHas('stock_items', [
         'product_id' => Product::query()->where('name', $newData->name)->first()->id,
         'color_id'   => $color->id,
         'size_id'    => $size->id,
@@ -98,11 +98,11 @@ it('can validate create input', function () {
 
     livewire(CreateProduct::class)
         ->fillForm([
-            'name'           => null,
-            'category_id'    => null,
-            'description'    => null,
-            'price'          => null,
-            'inventoryItems' => [
+            'name'        => null,
+            'category_id' => null,
+            'description' => null,
+            'price'       => null,
+            'stockItems'  => [
                 [
                     'color_id' => null,
                     'size_id'  => null,
@@ -123,22 +123,22 @@ it('can validate create input', function () {
         ])
         ->call('create')
         ->assertHasFormErrors([
-            'name'                      => 'required',
-            'category_id'               => 'required',
-            'description'               => 'required',
-            'price'                     => 'required',
-            'inventoryItems.0.color_id' => 'required',
-            'inventoryItems.0.size_id'  => 'required',
-            'inventoryItems.0.quantity' => 'required',
-            'features.0.name'           => 'required',
-            'features.0.value'          => 'required',
-            'comments.0.comment'        => 'required',
+            'name'                  => 'required',
+            'category_id'           => 'required',
+            'description'           => 'required',
+            'price'                 => 'required',
+            'stockItems.0.color_id' => 'required',
+            'stockItems.0.size_id'  => 'required',
+            'stockItems.0.quantity' => 'required',
+            'features.0.name'       => 'required',
+            'features.0.value'      => 'required',
+            'comments.0.comment'    => 'required',
         ])
         ->fillForm([
-            'name'           => str_repeat('a', 256),
-            'description'    => str_repeat('a', 1001),
-            'photos'         => $photos,
-            'inventoryItems' => [
+            'name'        => str_repeat('a', 256),
+            'description' => str_repeat('a', 1001),
+            'photos'      => $photos,
+            'stockItems'  => [
                 [
                     'quantity' => 10000,
                 ],
@@ -159,19 +159,19 @@ it('can validate create input', function () {
         ])
         ->call('create')
         ->assertHasFormErrors([
-            'name'                      => 'max',
-            'description'               => 'max',
-            'inventoryItems.0.quantity' => 'max',
-            'features.0.name'           => 'max',
-            'features.0.value'          => 'max',
-            'comments.0.comment'        => 'max',
-            'price'                     => 'max',
-            'price_before_discount'     => 'max',
-            'photos'                    => 'max',
+            'name'                  => 'max',
+            'description'           => 'max',
+            'stockItems.0.quantity' => 'max',
+            'features.0.name'       => 'max',
+            'features.0.value'      => 'max',
+            'comments.0.comment'    => 'max',
+            'price'                 => 'max',
+            'price_before_discount' => 'max',
+            'photos'                => 'max',
         ])
         ->fillForm([
-            'description'    => 'a',
-            'inventoryItems' => [
+            'description' => 'a',
+            'stockItems'  => [
                 [
                     'quantity' => -1,
                 ],
@@ -191,14 +191,14 @@ it('can validate create input', function () {
         ])
         ->call('create')
         ->assertHasFormErrors([
-            'description'               => 'min',
-            'inventoryItems.0.quantity' => 'min',
-            'comments.0.comment'        => 'min',
-            'price'                     => 'min',
-            'price_before_discount'     => 'min',
+            'description'           => 'min',
+            'stockItems.0.quantity' => 'min',
+            'comments.0.comment'    => 'min',
+            'price'                 => 'min',
+            'price_before_discount' => 'min',
         ])
         ->fillForm([
-            'inventoryItems' => [
+            'stockItems' => [
                 [
                     'quantity' => 100.4,
                 ],
@@ -213,10 +213,10 @@ it('can validate create input', function () {
         ])
         ->call('create')
         ->assertHasFormErrors([
-            'inventoryItems.0.quantity' => 'integer',
-            'features.0.name'           => 'alpha',
-            'price'                     => 'integer',
-            'price_before_discount'     => 'integer',
+            'stockItems.0.quantity' => 'integer',
+            'features.0.name'       => 'alpha',
+            'price'                 => 'integer',
+            'price_before_discount' => 'integer',
         ])
         ->fillForm([
             'photos' => [

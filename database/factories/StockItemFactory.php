@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\InventoryItem;
+use App\Models\StockItem;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<InventoryItem>
+ * @extends Factory<StockItem>
  */
-class InventoryItemFactory extends Factory
+class StockItemFactory extends Factory
 {
     /**
      * @return array<string, mixed>

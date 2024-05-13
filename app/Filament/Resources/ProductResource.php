@@ -58,7 +58,7 @@ class ProductResource extends Resource
                     ->maxLength(1000)
                     ->required()
                     ->columnSpanFull(),
-                Repeater::make('inventoryItems')
+                Repeater::make('stockItems')
                     ->label('Inventario')
                     ->addActionLabel('Agregar elemento')
                     ->relationship()
@@ -166,7 +166,7 @@ class ProductResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('quantity')
                     ->label('Cantidad')
-                    ->getStateUsing(fn (Product $product) => $product->inventoryItems->sum('quantity')),
+                    ->getStateUsing(fn (Product $product) => $product->stockItems->sum('quantity')),
             ])
             ->actions([
                 EditAction::make(),

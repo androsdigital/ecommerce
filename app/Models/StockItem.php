@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class InventoryItem extends Pivot
+class StockItem extends Pivot
 {
     use HasFactory;
 
-    protected $table = 'inventory_items';
+    protected $table = 'stock_items';
 
     public function size(): BelongsTo
     {

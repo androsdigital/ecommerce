@@ -10,9 +10,13 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
-            $table->integer('price');
+            $table->foreignId('user_id')->constrained();
+            $table->string('number', 32)->unique();
+            $table->integer('total_price');
+            $table->enum('status', ['processing', 'shipped', 'delivered', 'cancelled'])->default('processing');
+            $table->text('notes')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

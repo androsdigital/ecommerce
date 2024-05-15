@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('stock_items', function (Blueprint $table) {
             $table->id();
+            $table->string('sku', 10)->unique();
             $table->foreignId('product_id')->constrained();
             $table->foreignId('color_id')->constrained();
             $table->foreignId('size_id')->constrained();

@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Color;
 use App\Models\Product;
 use App\Models\Size;
+use App\Models\StockItem;
 use Illuminate\Http\UploadedFile;
 
 use function Pest\Livewire\livewire;
@@ -17,10 +18,11 @@ it('can render create page', function () {
 });
 
 it('can create a product', function () {
-    $size = Size::factory()->create();
-    $color = Color::factory()->create();
+    Size::factory()->create();
+    Color::factory()->create();
     $category = Category::factory()->create();
-    $newData = Product::factory()->for($category)->make();
+    $newData = Product::factory()->for($category)->create();
+    $stockItem = StockItem::factory()->make();
 
     $photos = [];
 
@@ -46,12 +48,13 @@ it('can create a product', function () {
             'name'        => $newData->name,
             'stockItems'  => [
                 [
-                    'color_id' => $size->id,
-                    'size_id'  => $color->id,
-                    'quantity' => 10,
+                    'sku'      => $stockItem->sku,
+                    'color_id' => $stockItem->color_id,
+                    'size_id'  => $stockItem->size_id,
+                    'quantity' => $stockItem->quantity,
                 ],
             ],
-            'slug'                  => $newData->slug,
+            'slug'                  => $newData->slug . '-new',
             'description'           => $newData->description,
             'photos'                => $photos,
             'price'                 => $newData->price,
@@ -65,20 +68,20 @@ it('can create a product', function () {
     $this->assertDatabaseHas(Product::class, [
         'category_id'           => $newData->category_id,
         'name'                  => $newData->name,
-        'slug'                  => $newData->slug,
+        'slug'                  => $newData->slug . '-new',
         'description'           => $newData->description,
         'price'                 => $newData->price,
         'price_before_discount' => $newData->price_before_discount,
     ]);
 
-    $this->assertDatabaseHas('stock_items', [
-        'product_id' => Product::query()->where('name', $newData->name)->first()->id,
-        'color_id'   => $color->id,
-        'size_id'    => $size->id,
-        'quantity'   => 10,
-    ]);
+    $product = Product::query()->where('slug', $newData->slug . '-new')->first();
 
-    $product = Product::query()->where('slug', $newData->slug)->first();
+    $this->assertDatabaseHas('stock_items', [
+        'product_id' => $product->id,
+        'color_id'   => $stockItem->color_id,
+        'size_id'    => $stockItem->size_id,
+        'quantity'   => $stockItem->quantity,
+    ]);
 
     $this->assertEquals($newData->features, $product->features);
     $this->assertEquals($newData->comments, $product->comments);
@@ -89,6 +92,13 @@ it('can create a product', function () {
 });
 
 it('can validate create input', function () {
+    Size::factory()->create();
+    Color::factory()->create();
+    Category::factory()->create();
+    Product::factory()->create();
+
+    $stockItem = StockItem::factory()->create();
+
     $bigPhoto = UploadedFile::fake()->image('big-photo.jpg')->size(5000);
     $photos = [];
 
@@ -104,6 +114,7 @@ it('can validate create input', function () {
             'price'       => null,
             'stockItems'  => [
                 [
+                    'sku'      => null,
                     'color_id' => null,
                     'size_id'  => null,
                     'quantity' => null,
@@ -127,6 +138,7 @@ it('can validate create input', function () {
             'category_id'           => 'required',
             'description'           => 'required',
             'price'                 => 'required',
+            'stockItems.0.sku'      => 'required',
             'stockItems.0.color_id' => 'required',
             'stockItems.0.size_id'  => 'required',
             'stockItems.0.quantity' => 'required',
@@ -140,6 +152,7 @@ it('can validate create input', function () {
             'photos'      => $photos,
             'stockItems'  => [
                 [
+                    'sku'      => str_repeat('a', 11),
                     'quantity' => 10000,
                 ],
             ],
@@ -161,6 +174,7 @@ it('can validate create input', function () {
         ->assertHasFormErrors([
             'name'                  => 'max',
             'description'           => 'max',
+            'stockItems.0.sku'      => 'max',
             'stockItems.0.quantity' => 'max',
             'features.0.name'       => 'max',
             'features.0.value'      => 'max',
@@ -200,6 +214,7 @@ it('can validate create input', function () {
         ->fillForm([
             'stockItems' => [
                 [
+                    'sku'      => $stockItem->sku,
                     'quantity' => 100.4,
                 ],
             ],
@@ -213,6 +228,7 @@ it('can validate create input', function () {
         ])
         ->call('create')
         ->assertHasFormErrors([
+            'stockItems.0.sku'      => 'unique',
             'stockItems.0.quantity' => 'integer',
             'features.0.name'       => 'alpha',
             'price'                 => 'integer',

@@ -6,6 +6,7 @@ use App\Filament\Resources\ProductResource\Pages\CreateProduct;
 use App\Filament\Resources\ProductResource\Pages\EditProduct;
 use App\Filament\Resources\ProductResource\Pages\ListProducts;
 use App\Models\Product;
+use App\Models\StockItem;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -82,6 +83,14 @@ class ProductResource extends Resource
                             ->minValue(0)
                             ->maxValue(9999)
                             ->numeric(),
+                        TextInput::make('sku')
+                            ->label('SKU')
+                            ->default(fn (Set $set) => 'SKU-' . random_int(100000, 999999))
+                            ->required()
+                            ->unique(StockItem::class, 'sku', ignoreRecord: true)
+                            ->disabled()
+                            ->dehydrated()
+                            ->maxLength(10),
                     ]),
                 Repeater::make('features')
                     ->label('Características')

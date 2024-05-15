@@ -26,6 +26,7 @@ class StockItemFactory extends Factory
             'size_id'    => $sizes->random(),
             'color_id'   => $colors->random(),
             'product_id' => $products->random(),
+            'sku'        => 'SKU-' . $this->faker->unique()->randomNumber(6),
             'quantity'   => $this->faker->numberBetween(1, 100),
         ];
     }

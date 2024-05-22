@@ -7,9 +7,9 @@ return new class extends SettingsMigration
 {
     public function up(): void
     {
-        $this->migrator->add('general.title', 'Filament E-shop');
-        $this->migrator->add('general.subTitle', 'Awesome shop');
-        $this->migrator->add('general.about', 'Awesome shop made with Filament by Laravel Daily');
+        $this->migrator->add('general.title', 'Dos Por Uno');
+        $this->migrator->add('general.subTitle', 'La tienda de las mejores promociones');
+        $this->migrator->add('general.about', 'Aquí encontrarás los mejores descuentos y ofertas de tu elección. ¡No te las pierdas!');
 
         // Logo
         Storage::deleteDirectory('public', true);

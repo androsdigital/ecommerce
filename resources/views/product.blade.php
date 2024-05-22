@@ -7,15 +7,15 @@
                     <img class="card-img-top mb-5 mb-md-0" src="{{ $product->getFirstMediaUrl(conversionName: 'front_large') }}" alt="{{ $product->name }}" />
                 </div>
                 <div class="col-md-6">
-                    <div class="small mb-1">Category: {{ $product->category->name }}</div>
+                    <div class="small mb-1">Categoría: {{ $product->category->name }}</div>
                     <h1 class="display-5 fw-bolder">{{ $product->name }}</h1>
                     <div class="fs-5 mb-5">
                         <!-- Product price-->
                         @if($product->price_before_discount)
-                            <span class="text-muted text-decoration-line-through">${{ number_format($product->price_before_discount, 2) }}</span>
-                            <span>${{ number_format($product->price, 2) }}</span>
+                            <span class="text-muted text-decoration-line-through">${{ $product->price_before_discount }}</span>
+                            <span>${{ $product->price }}</span>
                         @else
-                            <span>${{ number_format($product->price, 2) }}</span>
+                            <span>${{ $product->price }}</span>
                         @endif
                     </div>
                     <p class="lead">{{ $product->description }}</p>
@@ -25,7 +25,7 @@
 
                             <button class="btn btn-outline-dark flex-shrink-0" type="submit">
                                 <i class="bi-cart-fill me-1"></i>
-                                Order Product
+                                Ordenar Producto
                             </button>
                         </form>
                     </div>

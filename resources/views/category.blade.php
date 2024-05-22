@@ -10,7 +10,7 @@
                     @if($product->price_before_discount)
                         <!-- Sale badge-->
                         <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">
-                            Sale
+                            En Venta
                         </div>
                     @endif
                     <!-- Product image-->
@@ -26,15 +26,15 @@
                             </h5>
                             <!-- Product price-->
                             @if($product->price_before_discount)
-                                <span class="text-muted text-decoration-line-through">${{ number_format($product->price_before_discount, 2) }}</span> ${{ number_format($product->price, 2) }}
+                                <span class="text-muted text-decoration-line-through">${{ $product->price_before_discount }}</span> ${{ $product->price }}
                             @else
-                                ${{ number_format($product->price, 2) }}
+                                ${{ $product->price }}
                             @endif
                         </div>
                     </div>
                     <!-- Product actions-->
                     <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                        <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="{{ route('product', $product) }}">View Product</a>
+                        <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="{{ route('product', $product) }}">Ver Producto</a></div>
                         </div>
                     </div>
                 </div>

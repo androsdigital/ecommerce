@@ -1,9 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
-        <h1 class="display-4 fw-bolder">Order: {{ $order->id }}</h1>
+        <h1 class="display-4 fw-bolder">Orden: {{ $order->id }}</h1>
     </x-slot>
 
     <div class="alert alert-success" role="alert">
-        Successfully ordered
+        Orden creada con éxito.
     </div>
 </x-app-layout>

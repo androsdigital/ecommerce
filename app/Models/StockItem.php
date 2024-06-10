@@ -26,4 +26,9 @@ class StockItem extends Pivot
     {
         return $this->belongsTo(Color::class);
     }
+
+    public function address(): BelongsTo
+    {
+        return $this->belongsTo(Address::class);
+    }
 }

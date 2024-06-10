@@ -2,12 +2,15 @@
 
 namespace App\Enums;
 
+use App\Traits\Arrayable;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
 enum OrderStatus: string implements HasColor, HasIcon, HasLabel
 {
+    use Arrayable;
+
     case Processing = 'processing';
     case Shipped = 'shipped';
     case Delivered = 'delivered';

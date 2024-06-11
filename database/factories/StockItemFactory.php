@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Address;
 use App\Models\Color;
 use App\Models\Product;
 use App\Models\Size;
@@ -21,8 +22,10 @@ class StockItemFactory extends Factory
         $sizes = Size::pluck('id');
         $colors = Color::pluck('id');
         $products = Product::pluck('id');
+        $addresses = Address::pluck('id');
 
         return [
+            'address_id' => $addresses->random(),
             'size_id'    => $sizes->random(),
             'color_id'   => $colors->random(),
             'product_id' => $products->random(),

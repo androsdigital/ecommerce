@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('addresses', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(City::class)->constrained();
-            $table->foreignIdFor(Customer::class)->constrained();
+            $table->foreignIdFor(Customer::class)->nullable();
 
             $table->enum('street_type', StreetType::values())->default(StreetType::Calle);
             $table->string('street_number', 255);

@@ -19,6 +19,7 @@ class AddressFactory extends Factory
 
         return [
             'city_id'       => $city_id,
+            'customer_id'   => null,
             'street_type'   => fake()->randomElement(StreetType::values()),
             'street_number' => fake()->bothify('##?'),
             'first_number'  => fake()->bothify('##?'),

@@ -10,10 +10,15 @@ return new class() extends Migration
     {
         Schema::create('order_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_id')->constrained();
-            $table->foreignId('stock_item_id')->constrained();
-            $table->integer('quantity');
-            $table->integer('unit_price');
+
+            $table->foreignId('order_id')->constrained('orders');
+            $table->foreignId('stock_item_id')->constrained('stock_items');
+
+            $table->unsignedBigInteger('price_before_discount');
+            $table->unsignedBigInteger('discount');
+            $table->unsignedBigInteger('shipping_price');
+            $table->unsignedInteger('quantity');
+
             $table->timestamps();
         });
     }

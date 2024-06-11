@@ -16,9 +16,11 @@ class OrderItemFactory extends Factory
         $stockItems = StockItem::pluck('id');
 
         return [
-            'stock_item_id' => $stockItems->random(),
-            'quantity'      => $this->faker->numberBetween(1, 10),
-            'unit_price'    => $this->faker->randomNumber(4),
+            'stock_item_id'         => $stockItems->random(),
+            'price_before_discount' => $this->faker->randomNumber(4),
+            'discount'              => $this->faker->randomNumber(3),
+            'shipping_price'        => $this->faker->randomNumber(3),
+            'quantity'              => $this->faker->numberBetween(1, 10),
         ];
     }
 }

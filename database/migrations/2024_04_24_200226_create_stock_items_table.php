@@ -22,6 +22,8 @@ return new class extends Migration
 
             $table->string('sku', 10)->unique();
             $table->integer('quantity');
+            $table->unsignedBigInteger('price_before_discount');
+            $table->unsignedBigInteger('discount');
 
             $table->timestamps();
         });

@@ -17,17 +17,16 @@ class OrderFactory extends Factory
         $customer = Customer::inRandomOrder()->first();
         $address = $customer->addresses()->inRandomOrder()->first();
 
-        $total_price_before_discount = fake()->randomNumber(5);
-
         return [
             'customer_id' => $customer->id,
             'address_id'  => $address->id,
 
             'number'                      => 'OR' . fake()->unique()->randomNumber(6),
-            'total_price_before_discount' => $total_price_before_discount,
-            'total_discount'              => intdiv($total_price_before_discount, 2),
-            'total_shipping_price'        => fake()->randomNumber(3),
-            'total_quantity'              => fake()->randomNumber(1),
+            'total_price_before_discount' => 0,
+            'total_items_discount'        => 0,
+            'discount'                    => $this->faker->randomNumber(2),
+            'total_shipping_price'        => 0,
+            'total_quantity'              => 0,
             'status'                      => fake()->randomElement(OrderStatus::values()),
             'notes'                       => json_encode(fake()->realText(100)),
             'created_at'                  => fake()->dateTimeBetween('-2 month'),

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\StockItem;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -14,13 +15,13 @@ class OrderItemFactory extends Factory
     public function definition(): array
     {
         $stockItems = StockItem::pluck('id');
+        $orders = Order::pluck('id');
 
         return [
-            'stock_item_id'         => $stockItems->random(),
-            'price_before_discount' => $this->faker->randomNumber(4),
-            'discount'              => $this->faker->randomNumber(3),
-            'shipping_price'        => $this->faker->randomNumber(3),
-            'quantity'              => $this->faker->numberBetween(1, 10),
+            'order_id'       => $orders->random(),
+            'stock_item_id'  => $stockItems->random(),
+            'shipping_price' => $this->faker->randomNumber(2),
+            'quantity'       => $this->faker->numberBetween(1, 10),
         ];
     }
 }

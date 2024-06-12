@@ -14,8 +14,6 @@ return new class() extends Migration
             $table->foreignId('order_id')->constrained('orders');
             $table->foreignId('stock_item_id')->constrained('stock_items');
 
-            $table->unsignedBigInteger('price_before_discount');
-            $table->unsignedBigInteger('discount');
             $table->unsignedBigInteger('shipping_price');
             $table->unsignedInteger('quantity');
 

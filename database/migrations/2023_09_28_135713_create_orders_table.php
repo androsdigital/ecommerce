@@ -19,15 +19,12 @@ return new class extends Migration
 
             $table->string('number', 32)->unique();
             $table->unsignedBigInteger('total_price_before_discount');
-            $table->unsignedBigInteger('total_discount');
+            $table->unsignedBigInteger('total_items_discount');
             $table->unsignedBigInteger('total_shipping_price');
+            $table->unsignedBigInteger('discount');
             $table->unsignedInteger('total_quantity');
             $table->enum('status', OrderStatus::values())->default(OrderStatus::Processing);
             $table->json('notes')->nullable();
-
-            $table->unsignedBigInteger('total_price')->virtualAs(
-                'total_price_before_discount - total_discount + total_shipping_price'
-            );
 
             $table->timestamps();
 

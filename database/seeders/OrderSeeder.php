@@ -15,8 +15,21 @@ class OrderSeeder extends Seeder
     {
         Order::factory(100)
             ->create()
-            ->each(function ($order) {
+            ->each(function (Order $order) {
                 $order->OrderItems()->saveMany(OrderItem::factory(3)->make());
+
+                $order->total_price_before_discount = $order->orderItems->sum(function (OrderItem $orderItem): int {
+                    return $orderItem->stockItem->price_before_discount;
+                });
+
+                $order->total_items_discount = $order->orderItems->sum(function (OrderItem $orderItem): int {
+                    return $orderItem->stockItem->discount;
+                });
+
+                $order->total_shipping_price = $order->orderItems->sum('shipping_price');
+                $order->total_quantity = $order->orderItems()->sum('quantity');
+
+                $order->save();
             });
     }
 }

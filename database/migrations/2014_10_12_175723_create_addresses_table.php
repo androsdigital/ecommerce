@@ -27,6 +27,10 @@ return new class extends Migration
             $table->text('observation')->nullable();
             $table->geometry('location')->nullable();
 
+            $table->string('full_address')->virtualAs(
+                "CONCAT(street_type, ' ', street_number, ' # ', first_number, ' - ', second_number)"
+            );
+
             $table->timestamps();
         });
     }

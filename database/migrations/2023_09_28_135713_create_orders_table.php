@@ -25,7 +25,7 @@ return new class extends Migration
             $table->enum('status', OrderStatus::values())->default(OrderStatus::Processing);
             $table->json('notes')->nullable();
 
-            $table->string('total_price')->virtualAs(
+            $table->unsignedBigInteger('total_price')->virtualAs(
                 'total_price_before_discount - total_discount + total_shipping_price'
             );
 

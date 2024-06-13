@@ -24,6 +24,8 @@ it('can list orders', function () {
         ->assertCanRenderTableColumn('total_price')
         ->assertCanRenderTableColumn('address.full_address')
         ->assertCanNotRenderTableColumn('total_price_before_discount')
+        ->assertCanNotRenderTableColumn('total_items_discount')
+        ->assertCanNotRenderTableColumn('discount')
         ->assertCanNotRenderTableColumn('total_discount')
         ->assertCanNotRenderTableColumn('total_shipping_price')
         ->assertCanNotRenderTableColumn('total_quantity')
@@ -45,6 +47,8 @@ it('can set correct record values', function () {
         ->assertTableColumnStateSet('total_price', $order->total_price, record: $order)
         ->assertTableColumnStateSet('address.full_address', $order->address->full_address, record: $order)
         ->assertTableColumnStateSet('total_price_before_discount', $order->total_price_before_discount, record: $order)
+        ->assertTableColumnStateSet('total_items_discount', $order->total_items_discount, record: $order)
+        ->assertTableColumnStateSet('discount', $order->discount, record: $order)
         ->assertTableColumnStateSet('total_discount', $order->total_discount, record: $order)
         ->assertTableColumnStateSet('total_shipping_price', $order->total_shipping_price, record: $order)
         ->assertTableColumnStateSet('total_quantity', $order->total_quantity, record: $order)
@@ -75,7 +79,7 @@ it('can search orders', function () {
     $this->assertAuthenticated();
 });
 
-it('can sort orders by title', function () {
+it('can sort orders', function () {
     $orders = Order::factory()->count(10)->create();
 
     livewire(ListOrders::class)
@@ -87,10 +91,22 @@ it('can sort orders by title', function () {
         ->assertCanSeeTableRecords($orders->sortBy('number'), inOrder: true)
         ->sortTable('number', 'desc')
         ->assertCanSeeTableRecords($orders->sortByDesc('number'), inOrder: true)
+        ->sortTable('total_price')
+        ->assertCanSeeTableRecords($orders->sortBy('total_price'), inOrder: true)
+        ->sortTable('total_price', 'desc')
+        ->assertCanSeeTableRecords($orders->sortByDesc('total_price'), inOrder: true)
         ->sortTable('total_price_before_discount')
         ->assertCanSeeTableRecords($orders->sortBy('total_price_before_discount'), inOrder: true)
         ->sortTable('total_price_before_discount', 'desc')
         ->assertCanSeeTableRecords($orders->sortByDesc('total_price_before_discount'), inOrder: true)
+        ->sortTable('total_items_discount')
+        ->assertCanSeeTableRecords($orders->sortBy('total_items_discount'), inOrder: true)
+        ->sortTable('total_items_discount', 'desc')
+        ->assertCanSeeTableRecords($orders->sortByDesc('total_items_discount'), inOrder: true)
+        ->sortTable('discount')
+        ->assertCanSeeTableRecords($orders->sortBy('discount'), inOrder: true)
+        ->sortTable('discount', 'desc')
+        ->assertCanSeeTableRecords($orders->sortByDesc('discount'), inOrder: true)
         ->sortTable('total_discount')
         ->assertCanSeeTableRecords($orders->sortBy('total_discount'), inOrder: true)
         ->sortTable('total_discount', 'desc')
@@ -139,7 +155,10 @@ it('can sum values in a column', function () {
 
     livewire(ListOrders::class)
         ->assertCanSeeTableRecords($orders)
+        ->assertTableColumnSummarySet('total_price', 'sum', $orders->sum('total_price'))
         ->assertTableColumnSummarySet('total_price_before_discount', 'sum', $orders->sum('total_price_before_discount'))
+        ->assertTableColumnSummarySet('total_items_discount', 'sum', $orders->sum('total_items_discount'))
+        ->assertTableColumnSummarySet('discount', 'sum', $orders->sum('discount'))
         ->assertTableColumnSummarySet('total_discount', 'sum', $orders->sum('total_discount'))
         ->assertTableColumnSummarySet('total_shipping_price', 'sum', $orders->sum('total_shipping_price'))
         ->assertTableColumnSummarySet('total_quantity', 'sum', $orders->sum('total_quantity'));

@@ -231,6 +231,20 @@ class OrderResource extends Resource
                 ->sortable()
                 ->summarize(Sum::make('sum')->label('Total')->numeric(locale: 'es')),
 
+            TextColumn::make('total_items_discount')
+                ->label('Descuento total en los productos')
+                ->toggleable(isToggledHiddenByDefault: true)
+                ->numeric(locale: 'es')
+                ->sortable()
+                ->summarize(Sum::make('sum')->label('Total')->numeric(locale: 'es')),
+
+            TextColumn::make('discount')
+                ->label('Descuento propio')
+                ->toggleable(isToggledHiddenByDefault: true)
+                ->numeric(locale: 'es')
+                ->sortable()
+                ->summarize(Sum::make('sum')->label('Total')->numeric(locale: 'es')),
+
             TextColumn::make('total_discount')
                 ->label('Descuento total')
                 ->toggleable(isToggledHiddenByDefault: true)
@@ -268,6 +282,43 @@ class OrderResource extends Resource
 
     public static function getTableFilters(): array
     {
-        return false;
+        return [
+            TrashedFilter::make(),
+            Filter::make('created_at')
+                ->form([
+                    DatePicker::make('created_from')
+                        ->label('Pedidos creados desde')
+                        ->native(false)
+                        ->placeholder(fn ($state): string => now()->format('d/m/Y'))
+                        ->displayFormat('d/m/Y'),
+                    DatePicker::make('created_until')
+                        ->label('Pedidos creados hasta')
+                        ->native(false)
+                        ->placeholder(fn ($state): string => now()->format('d/m/Y'))
+                        ->displayFormat('d/m/Y'),
+                ])
+                ->query(function (Builder $query, array $data): Builder {
+                    return $query
+                        ->when(
+                            $data['created_from'] ?? null,
+                            fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                        )
+                        ->when(
+                            $data['created_until'] ?? null,
+                            fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                        );
+                })
+                ->indicateUsing(function (array $data): array {
+                    $indicators = [];
+                    if ($data['created_from'] ?? null) {
+                        $indicators['created_from'] = 'Pedidos desde ' . Carbon::parse($data['created_from'])->toFormattedDateString();
+                    }
+                    if ($data['created_until'] ?? null) {
+                        $indicators['created_until'] = 'Pedidos hasta ' . Carbon::parse($data['created_until'])->toFormattedDateString();
+                    }
+
+                    return $indicators;
+                }),
+        ];
     }
 }

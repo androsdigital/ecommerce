@@ -28,6 +28,10 @@ class OrderSeeder extends Seeder
 
                 $order->total_shipping_price = $order->orderItems->sum('shipping_price');
                 $order->total_quantity = $order->orderItems()->sum('quantity');
+                $order->total_discount = $order->total_items_discount + $order->discount;
+                $order->total_price = $order->total_price_before_discount
+                    - $order->total_discount
+                    + $order->total_shipping_price;
 
                 $order->save();
             });

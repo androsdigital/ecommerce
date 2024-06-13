@@ -163,3 +163,14 @@ it('can sum values in a column', function () {
         ->assertTableColumnSummarySet('total_shipping_price', 'sum', $orders->sum('total_shipping_price'))
         ->assertTableColumnSummarySet('total_quantity', 'sum', $orders->sum('total_quantity'));
 });
+
+//it('can bulk delete orders', function () {
+//    $orders = Order::factory()->count(10)->create();
+//
+//    livewire(ListOrders::class)
+//        ->callTableBulkAction('delete', $orders);
+//
+//    foreach ($orders as $order) {
+//        $this->assertModelMissing($order);
+//    }
+//});

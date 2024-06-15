@@ -3,26 +3,23 @@
 namespace App\Filament\Resources;
 
 use App\Enums\OrderStatus;
-use App\Filament\Resources\OrderResource\Pages\CreateOrder;
 use App\Filament\Resources\OrderResource\Pages\EditOrder;
 use App\Filament\Resources\OrderResource\Pages\ListOrders;
+use App\Filament\Resources\OrderResource\RelationManagers\OrderItemsRelationManager;
 use App\Filament\Resources\OrderResource\RelationManagers\PaymentsRelationManager;
 use App\Filament\Resources\OrderResource\Widgets\OrderStats;
 use App\Models\Order;
-use App\Models\StockItem;
+use App\Traits\HasAddress;
 use Exception;
-use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
-use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\Summarizers\Sum;
@@ -38,12 +35,37 @@ use Illuminate\Support\Carbon;
 
 class OrderResource extends Resource
 {
+    use HasAddress;
+
     protected static ?string $model = Order::class;
 
     protected static ?string $modelLabel = 'Pedido';
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
 
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Group::make()
+                    ->schema([
+                        Section::make()
+                            ->schema(static::getDetailsFormSchema())
+                            ->columns(2),
+                    ])
+                    ->columnSpan(['lg' => fn (?Order $record) => $record === null ? 3 : 2]),
+
+                Section::make()
+                    ->schema(self::getPlaceholdersFormSchema())
+                    ->columnSpan(['lg' => 1])
+                    ->hidden(fn (?Order $record) => $record === null),
+            ])
+            ->columns(3);
+    }
+
+    /**
+     * @throws Exception
+     */
     public static function table(Table $table): Table
     {
         return $table
@@ -66,7 +88,8 @@ class OrderResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //PaymentsRelationManager::class,
+            //            OrderItemsRelationManager::class,
+            //            PaymentsRelationManager::class,
         ];
     }
 
@@ -80,9 +103,8 @@ class OrderResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => ListOrders::route('/'),
-            'create' => CreateOrder::route('/create'),
-            'edit'   => EditOrder::route('/{record}/edit'),
+            'index' => ListOrders::route('/'),
+            'edit'  => EditOrder::route('/{record}/edit'),
         ];
     }
 
@@ -123,11 +145,11 @@ class OrderResource extends Resource
         return [
             TextInput::make('number')
                 ->label('Número')
-                ->default('OR-' . random_int(100000, 999999))
+                ->default(fake()->unique()->numerify('OR-######'))
                 ->disabled()
                 ->dehydrated()
                 ->required()
-                ->maxLength(32)
+                ->maxLength(31)
                 ->unique(Order::class, 'number', ignoreRecord: true),
 
             Select::make('customer_id')
@@ -137,9 +159,16 @@ class OrderResource extends Resource
                 ->required(),
 
             ToggleButtons::make('status')
+                ->label('Estado')
                 ->inline()
                 ->options(OrderStatus::class)
                 ->required(),
+
+            Section::make()
+                ->heading('Dirección')
+                ->collapsible()
+                ->relationship('address')
+                ->schema(static::getAddressFormSchema()),
 
             MarkdownEditor::make('notes')
                 ->label('Observaciones')
@@ -147,49 +176,41 @@ class OrderResource extends Resource
         ];
     }
 
-    public static function getItemsRepeater(): Repeater
+    public static function getPlaceholdersFormSchema(): array
     {
-        return Repeater::make('orderItems')
-            ->relationship()
-            ->schema([
-                Select::make('stock_item_id')
-                    ->relationship('stockItem', 'product.name')
-                    ->label('Producto')
-                    ->required()
-                    ->reactive()
-                    ->afterStateUpdated(fn ($state, Set $set) => $set('unit_price', StockItem::find($state)?->unit_price ?? 0))
-                    ->distinct()
-                    ->disableOptionsWhenSelectedInSiblingRepeaterItems()
-                    ->columnSpan([
-                        'md' => 5,
-                    ])
-                    ->searchable(),
+        return [
+            Placeholder::make('total_price')
+                ->label('Total')
+                ->content(fn (Order $record): ?string => number_format($record->total_price, thousands_separator: '.')),
 
-                TextInput::make('quantity')
-                    ->label('Quantity')
-                    ->numeric()
-                    ->default(1)
-                    ->columnSpan([
-                        'md' => 2,
-                    ])
-                    ->required(),
+            Placeholder::make('total_price_before_discount')
+                ->label('SubTotal')
+                ->content(fn (Order $record): ?string => number_format($record->total_price_before_discount, thousands_separator: '.')),
 
-                TextInput::make('unit_price')
-                    ->label('Unit Price')
-                    ->disabled()
-                    ->dehydrated()
-                    ->numeric()
-                    ->required()
-                    ->columnSpan([
-                        'md' => 3,
-                    ]),
-            ])
-            ->defaultItems(1)
-            ->hiddenLabel()
-            ->columns([
-                'md' => 10,
-            ])
-            ->required();
+            Placeholder::make('total_items_discount')
+                ->label('Descuento de los Productos')
+                ->content(fn (Order $record): ?string => number_format($record->total_items_discount, thousands_separator: '.')),
+
+            Placeholder::make('discount')
+                ->label('Descuento del Pedido')
+                ->content(fn (Order $record): ?string => number_format($record->discount, thousands_separator: '.')),
+
+            Placeholder::make('total_discount')
+                ->label('Descuento Total')
+                ->content(fn (Order $record): ?string => number_format($record->total_discount, thousands_separator: '.')),
+
+            Placeholder::make('total_quantity')
+                ->label('Cantidad de Productos')
+                ->content(fn (Order $record): ?string => number_format($record->total_quantity, thousands_separator: '.')),
+
+            Placeholder::make('created_at')
+                ->label('Creado')
+                ->content(fn (Order $record): ?string => $record->created_at?->diffForHumans()),
+
+            Placeholder::make('updated_at')
+                ->label('Modificado')
+                ->content(fn (Order $record): ?string => $record->updated_at?->diffForHumans()),
+        ];
     }
 
     public static function getTableColumns(): array
@@ -320,5 +341,10 @@ class OrderResource extends Resource
                     return $indicators;
                 }),
         ];
+    }
+
+    public static function canCreate(): bool
+    {
+        return false;
     }
 }

@@ -29,6 +29,7 @@ class Order extends Model
 
     protected $casts = [
         'status' => OrderStatus::class,
+        'notes'  => 'array',
     ];
 
     /**
@@ -53,5 +54,33 @@ class Order extends Model
     public function address(): BelongsTo
     {
         return $this->belongsTo(Address::class);
+    }
+
+    public function saveOrderItem(int $count = 1): self
+    {
+        if ($count === 1) {
+            $this->OrderItems()->save(OrderItem::factory()->make());
+        } else {
+            $this->OrderItems()->saveMany(OrderItem::factory($count)->make());
+        }
+
+        $this->total_price_before_discount = $this->orderItems->sum(function (OrderItem $orderItem): int {
+            return $orderItem->stockItem->price_before_discount;
+        });
+
+        $this->total_items_discount = $this->orderItems->sum(function (OrderItem $orderItem): int {
+            return $orderItem->stockItem->discount;
+        });
+
+        $this->total_shipping_price = $this->orderItems->sum('shipping_price');
+        $this->total_quantity = $this->orderItems()->sum('quantity');
+        $this->total_discount = $this->total_items_discount + $this->discount;
+        $this->total_price = $this->total_price_before_discount
+            - $this->total_discount
+            + $this->total_shipping_price;
+
+        $this->save();
+
+        return $this;
     }
 }

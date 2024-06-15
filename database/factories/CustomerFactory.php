@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Address;
 use App\Models\Customer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -24,6 +25,15 @@ class CustomerFactory extends Factory
             'password'          => Hash::make('password'),
             'remember_token'    => Str::random(10),
         ];
+    }
+
+    public function configure(): static
+    {
+        return $this->afterCreating(function (Customer $customer) {
+            if ($customer->addresses()->count() === 0) {
+                $customer->addresses()->save(Address::factory()->create());
+            }
+        });
     }
 
     public function unverified(): static

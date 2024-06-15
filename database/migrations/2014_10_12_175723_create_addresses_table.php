@@ -17,11 +17,11 @@ return new class extends Migration
             $table->foreignIdFor(Customer::class)->nullable();
 
             $table->enum('street_type', StreetType::values())->default(StreetType::Calle);
-            $table->string('street_number', 255);
-            $table->string('first_number', 255)->nullable();
-            $table->string('second_number', 255)->nullable();
+            $table->string('street_number', 31);
+            $table->string('first_number', 31)->nullable();
+            $table->string('second_number', 31)->nullable();
             $table->string('apartment', 255)->nullable();
-            $table->string('phone', 255)->nullable();
+            $table->string('phone', 31)->nullable();
             $table->text('observation')->nullable();
             $table->geometry('location')->nullable();
 

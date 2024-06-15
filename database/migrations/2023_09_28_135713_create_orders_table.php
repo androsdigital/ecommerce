@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
 
             $table->foreignIdFor(Customer::class)->constrained();
-            $table->foreignIdFor(Address::class)->constrained();
+            $table->foreignIdFor(Address::class)->nullable();
 
-            $table->string('number', 32)->unique();
+            $table->string('number', 31)->unique();
             $table->unsignedBigInteger('total_price');
             $table->unsignedBigInteger('total_price_before_discount');
             $table->unsignedBigInteger('total_items_discount');

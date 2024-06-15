@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-use App\Enums\AddressType;
 use App\Enums\StreetType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Address extends Model
 {
@@ -23,7 +21,6 @@ class Address extends Model
         'first_number',
         'second_number',
         'apartment_number',
-        'type',
         'phone',
         'observation',
         'location',
@@ -31,7 +28,6 @@ class Address extends Model
 
     protected $casts = [
         'street_type' => StreetType::class,
-        'type'        => AddressType::class,
     ];
 
     /**
@@ -40,11 +36,6 @@ class Address extends Model
     public function city(): belongsTo
     {
         return $this->belongsTo(City::class);
-    }
-
-    public function addressable(): MorphTo
-    {
-        return $this->morphTo();
     }
 
     public function orders(): HasMany

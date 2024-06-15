@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\AddressType;
 use App\Enums\StreetType;
 use App\Models\City;
 use App\Models\Customer;
@@ -22,7 +21,6 @@ return new class extends Migration
             $table->string('first_number', 255)->nullable();
             $table->string('second_number', 255)->nullable();
             $table->string('apartment', 255)->nullable();
-            $table->enum('type', AddressType::values())->default(AddressType::Urban);
             $table->string('phone', 255)->nullable();
             $table->text('observation')->nullable();
             $table->geometry('location')->nullable();

@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Enums\AddressType;
 use App\Enums\StreetType;
 use App\Models\Address;
 use App\Models\City;
@@ -25,7 +24,6 @@ class AddressFactory extends Factory
             'first_number'  => fake()->bothify('##?'),
             'second_number' => fake()->bothify('##?'),
             'apartment'     => fake()->bothify('####'),
-            'type'          => fake()->randomElement(AddressType::values()),
             'phone'         => fake()->unique()->phoneNumber(),
             'observation'   => fake()->paragraph(),
         ];

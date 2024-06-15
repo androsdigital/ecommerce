@@ -168,13 +168,15 @@ it('can sum values in a column', function () {
         ->assertTableColumnSummarySet('total_quantity', 'sum', $this->orders->sum('total_quantity'));
 });
 
-//it('can bulk delete orders', function () {
-//    $orders = Order::factory()->count(10)->create();
-//
-//    livewire(ListOrders::class)
-//        ->callTableBulkAction('delete', $orders);
-//
-//    foreach ($orders as $order) {
-//        $this->assertModelMissing($order);
-//    }
-//});
+it('can bulk delete orders', function () {
+    $this->createOrder(10);
+
+    livewire(ListOrders::class)
+        ->callTableBulkAction(DeleteBulkAction::class, $this->orders);
+
+    foreach ($this->orders as $order) {
+        $order->refresh();
+
+        $this->assertNotNull($order->deleted_at);
+    }
+});

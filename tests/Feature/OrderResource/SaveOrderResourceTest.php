@@ -3,6 +3,7 @@
 use App\Filament\Resources\OrderResource;
 use App\Filament\Resources\OrderResource\Pages\EditOrder;
 use App\Models\Order;
+use Filament\Actions\DeleteAction;
 
 use function Pest\Livewire\livewire;
 
@@ -115,6 +116,22 @@ it('can validate save input', function () {
             'address.phone'         => 'max',
             'address.apartment'     => 'max',
         ]);
+
+    $this->assertAuthenticated();
+});
+
+it('can delete an order', function () {
+    $this->createOrder();
+
+    livewire(EditOrder::class, [
+        'record' => $this->order->getRouteKey(),
+    ])
+        ->callAction(DeleteAction::class)
+        ->assertActionHalted(DeleteAction::class);
+
+    $this->order->refresh();
+
+    $this->assertNotNull($this->order->deleted_at);
 
     $this->assertAuthenticated();
 });

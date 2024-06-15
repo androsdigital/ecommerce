@@ -3,6 +3,7 @@
 use App\Filament\Resources\OrderResource;
 use App\Filament\Resources\OrderResource\Pages\ListOrders;
 use App\Models\Order;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Illuminate\Database\Eloquent\Builder;
 
 use function Pest\Livewire\livewire;
@@ -14,9 +15,10 @@ it('can render list page', function () {
 });
 
 it('can list orders', function () {
-    $orders = Order::factory()->count(10)->create();
+    $this->createOrder(10);
+
     livewire(ListOrders::class)
-        ->assertCanSeeTableRecords($orders)
+        ->assertCanSeeTableRecords($this->orders)
         ->assertCountTableRecords(10)
         ->assertCanRenderTableColumn('customer.name')
         ->assertCanRenderTableColumn('number')
@@ -36,9 +38,9 @@ it('can list orders', function () {
 });
 
 it('can set correct record values', function () {
-    $orders = Order::factory()->count(10)->create();
+    $this->createOrder(10);
 
-    $order = $orders->random();
+    $order = $this->orders->random();
 
     livewire(ListOrders::class)
         ->assertTableColumnStateSet('customer.name', $order->customer->name, record: $order)
@@ -57,14 +59,15 @@ it('can set correct record values', function () {
 });
 
 it('can search orders', function () {
-    $orders = Order::factory()->count(10)->create();
-    $order = $orders->random();
+    $this->createOrder(10);
+
+    $order = $this->orders->random();
 
     livewire(ListOrders::class)
-        ->assertCanSeeTableRecords($orders)
+        ->assertCanSeeTableRecords($this->orders)
         ->searchTable($order->number)
-        ->assertCanSeeTableRecords($orders->where('number', $order->number))
-        ->assertCountTableRecords($orders->where('number', $order->number)->count())
+        ->assertCanSeeTableRecords($this->orders->where('number', $order->number))
+        ->assertCountTableRecords($this->orders->where('number', $order->number)->count())
         ->searchTable($order->address->full_address)
         ->assertCanSeeTableRecords(Order::whereHas('address', function (Builder $query) use ($order) {
             $query->where('full_address', $order->address->full_address);
@@ -73,69 +76,70 @@ it('can search orders', function () {
             $query->where('full_address', $order->address->full_address);
         })->get()->count())
         ->searchTable($order->customer->name)
-        ->assertCanSeeTableRecords($orders->where('customer_id', $order->customer->id))
-        ->assertCountTableRecords($orders->where('customer_id', $order->customer->id)->count());
+        ->assertCanSeeTableRecords($this->orders->where('customer_id', $order->customer->id))
+        ->assertCountTableRecords($this->orders->where('customer_id', $order->customer->id)->count());
 
     $this->assertAuthenticated();
 });
 
 it('can sort orders', function () {
-    $orders = Order::factory()->count(10)->create();
+    $this->createOrder(10);
 
     livewire(ListOrders::class)
         ->sortTable('costumer.name')
-        ->assertCanSeeTableRecords($orders->sortBy('costumer.name'), inOrder: true)
+        ->assertCanSeeTableRecords($this->orders->sortBy('costumer.name'), inOrder: true)
         ->sortTable('costumer.name', 'desc')
-        ->assertCanSeeTableRecords($orders->sortByDesc('costumer.name'), inOrder: true)
+        ->assertCanSeeTableRecords($this->orders->sortByDesc('costumer.name'), inOrder: true)
         ->sortTable('number')
-        ->assertCanSeeTableRecords($orders->sortBy('number'), inOrder: true)
+        ->assertCanSeeTableRecords($this->orders->sortBy('number'), inOrder: true)
         ->sortTable('number', 'desc')
-        ->assertCanSeeTableRecords($orders->sortByDesc('number'), inOrder: true)
+        ->assertCanSeeTableRecords($this->orders->sortByDesc('number'), inOrder: true)
         ->sortTable('total_price')
-        ->assertCanSeeTableRecords($orders->sortBy('total_price'), inOrder: true)
+        ->assertCanSeeTableRecords($this->orders->sortBy('total_price'), inOrder: true)
         ->sortTable('total_price', 'desc')
-        ->assertCanSeeTableRecords($orders->sortByDesc('total_price'), inOrder: true)
+        ->assertCanSeeTableRecords($this->orders->sortByDesc('total_price'), inOrder: true)
         ->sortTable('total_price_before_discount')
-        ->assertCanSeeTableRecords($orders->sortBy('total_price_before_discount'), inOrder: true)
+        ->assertCanSeeTableRecords($this->orders->sortBy('total_price_before_discount'), inOrder: true)
         ->sortTable('total_price_before_discount', 'desc')
-        ->assertCanSeeTableRecords($orders->sortByDesc('total_price_before_discount'), inOrder: true)
+        ->assertCanSeeTableRecords($this->orders->sortByDesc('total_price_before_discount'), inOrder: true)
         ->sortTable('total_items_discount')
-        ->assertCanSeeTableRecords($orders->sortBy('total_items_discount'), inOrder: true)
+        ->assertCanSeeTableRecords($this->orders->sortBy('total_items_discount'), inOrder: true)
         ->sortTable('total_items_discount', 'desc')
-        ->assertCanSeeTableRecords($orders->sortByDesc('total_items_discount'), inOrder: true)
+        ->assertCanSeeTableRecords($this->orders->sortByDesc('total_items_discount'), inOrder: true)
         ->sortTable('discount')
-        ->assertCanSeeTableRecords($orders->sortBy('discount'), inOrder: true)
+        ->assertCanSeeTableRecords($this->orders->sortBy('discount'), inOrder: true)
         ->sortTable('discount', 'desc')
-        ->assertCanSeeTableRecords($orders->sortByDesc('discount'), inOrder: true)
+        ->assertCanSeeTableRecords($this->orders->sortByDesc('discount'), inOrder: true)
         ->sortTable('total_discount')
-        ->assertCanSeeTableRecords($orders->sortBy('total_discount'), inOrder: true)
+        ->assertCanSeeTableRecords($this->orders->sortBy('total_discount'), inOrder: true)
         ->sortTable('total_discount', 'desc')
-        ->assertCanSeeTableRecords($orders->sortByDesc('total_discount'), inOrder: true)
+        ->assertCanSeeTableRecords($this->orders->sortByDesc('total_discount'), inOrder: true)
         ->sortTable('total_shipping_price')
-        ->assertCanSeeTableRecords($orders->sortBy('total_shipping_price'), inOrder: true)
+        ->assertCanSeeTableRecords($this->orders->sortBy('total_shipping_price'), inOrder: true)
         ->sortTable('total_shipping_price', 'desc')
-        ->assertCanSeeTableRecords($orders->sortByDesc('total_shipping_price'), inOrder: true)
+        ->assertCanSeeTableRecords($this->orders->sortByDesc('total_shipping_price'), inOrder: true)
         ->sortTable('total_quantity')
-        ->assertCanSeeTableRecords($orders->sortBy('total_quantity'), inOrder: true)
+        ->assertCanSeeTableRecords($this->orders->sortBy('total_quantity'), inOrder: true)
         ->sortTable('total_quantity', 'desc')
-        ->assertCanSeeTableRecords($orders->sortByDesc('total_quantity'), inOrder: true)
+        ->assertCanSeeTableRecords($this->orders->sortByDesc('total_quantity'), inOrder: true)
         ->sortTable('created_at')
-        ->assertCanSeeTableRecords($orders->sortBy('created_at'), inOrder: true)
+        ->assertCanSeeTableRecords($this->orders->sortBy('created_at'), inOrder: true)
         ->sortTable('created_at', 'desc')
-        ->assertCanSeeTableRecords($orders->sortByDesc('created_at'), inOrder: true)
+        ->assertCanSeeTableRecords($this->orders->sortByDesc('created_at'), inOrder: true)
         ->sortTable('updated_at')
-        ->assertCanSeeTableRecords($orders->sortBy('updated_at'), inOrder: true)
+        ->assertCanSeeTableRecords($this->orders->sortBy('updated_at'), inOrder: true)
         ->sortTable('updated_at', 'desc')
-        ->assertCanSeeTableRecords($orders->sortByDesc('updated_at'), inOrder: true);
+        ->assertCanSeeTableRecords($this->orders->sortByDesc('updated_at'), inOrder: true);
 });
 
 it('can filter by creation date', function () {
-    $orders = Order::factory()->count(10)->create();
-    $ordersFromMonthAgo = $orders->where('created_at', '>=', now()->subMonth());
-    $ordersUntilMonthAgo = $orders->where('created_at', '<', now()->subMonth());
+    $this->createOrder(10);
+
+    $ordersFromMonthAgo = $this->orders->where('created_at', '>=', now()->subMonth());
+    $ordersUntilMonthAgo = $this->orders->where('created_at', '<=', now()->subMonth());
 
     livewire(ListOrders::class)
-        ->assertCanSeeTableRecords($orders)
+        ->assertCanSeeTableRecords($this->orders)
         ->assertCountTableRecords(10)
         ->filterTable('created_at', [
             'created_from' => now()->subMonth(),
@@ -151,17 +155,17 @@ it('can filter by creation date', function () {
 });
 
 it('can sum values in a column', function () {
-    $orders = Order::factory()->count(10)->create();
+    $this->createOrder(10);
 
     livewire(ListOrders::class)
-        ->assertCanSeeTableRecords($orders)
-        ->assertTableColumnSummarySet('total_price', 'sum', $orders->sum('total_price'))
-        ->assertTableColumnSummarySet('total_price_before_discount', 'sum', $orders->sum('total_price_before_discount'))
-        ->assertTableColumnSummarySet('total_items_discount', 'sum', $orders->sum('total_items_discount'))
-        ->assertTableColumnSummarySet('discount', 'sum', $orders->sum('discount'))
-        ->assertTableColumnSummarySet('total_discount', 'sum', $orders->sum('total_discount'))
-        ->assertTableColumnSummarySet('total_shipping_price', 'sum', $orders->sum('total_shipping_price'))
-        ->assertTableColumnSummarySet('total_quantity', 'sum', $orders->sum('total_quantity'));
+        ->assertCanSeeTableRecords($this->orders)
+        ->assertTableColumnSummarySet('total_price', 'sum', $this->orders->sum('total_price'))
+        ->assertTableColumnSummarySet('total_price_before_discount', 'sum', $this->orders->sum('total_price_before_discount'))
+        ->assertTableColumnSummarySet('total_items_discount', 'sum', $this->orders->sum('total_items_discount'))
+        ->assertTableColumnSummarySet('discount', 'sum', $this->orders->sum('discount'))
+        ->assertTableColumnSummarySet('total_discount', 'sum', $this->orders->sum('total_discount'))
+        ->assertTableColumnSummarySet('total_shipping_price', 'sum', $this->orders->sum('total_shipping_price'))
+        ->assertTableColumnSummarySet('total_quantity', 'sum', $this->orders->sum('total_quantity'));
 });
 
 //it('can bulk delete orders', function () {

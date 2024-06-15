@@ -13,6 +13,7 @@ use App\Models\Size;
 use App\Models\State;
 use App\Models\StockItem;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
@@ -39,6 +40,8 @@ abstract class TestCase extends BaseTestCase
 
     protected ?Customer $customer = null;
 
+    protected ?Collection $orders = null;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -46,7 +49,7 @@ abstract class TestCase extends BaseTestCase
         $this->actingAs(User::factory()->create());
     }
 
-    protected function createOrder(): void
+    protected function createOrder(int $count = 1): void
     {
         $this->state = State::factory()->create();
         $this->city = City::factory()->create();
@@ -57,7 +60,12 @@ abstract class TestCase extends BaseTestCase
         $this->color = Color::factory()->create();
         $this->stockItem = StockItem::factory()->create();
         $this->customer = Customer::factory()->create();
-        $this->order = Order::factory()->create();
+
+        if ($count === 1) {
+            $this->order = Order::factory()->create();
+        } else {
+            $this->orders = Order::factory($count)->create();
+        }
     }
 
     protected function makeOrder(): Order

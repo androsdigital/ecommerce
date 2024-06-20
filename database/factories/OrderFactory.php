@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\OrderStatus;
+use App\Models\Address;
 use App\Models\Customer;
 use App\Models\Order;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -14,8 +15,8 @@ class OrderFactory extends Factory
 {
     public function definition(): array
     {
-        $customer = Customer::inRandomOrder()->first();
-        $address = $customer->addresses()->inRandomOrder()->first();
+        $customer = Customer::inRandomOrder()->first() ?? Customer::factory()->create();
+        $address = $customer->addresses()->inRandomOrder()->first() ?? Address::factory()->create();
         $discount = $this->faker->randomNumber(2);
 
         return [

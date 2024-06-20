@@ -10,10 +10,10 @@ class ProductFactory extends Factory
 {
     public function definition(): array
     {
-        $categories = Category::pluck('id');
+        $category = Category::inRandomOrder()->first() ?? Category::factory()->create();
 
         return [
-            'category_id' => $categories->random(),
+            'category_id' => $category->id,
             'name'        => $this->faker->unique()->catchPhrase(),
             'slug'        => fn (array $attributes): string => Str::slug($attributes['name']),
             'description' => $this->faker->paragraph(),

@@ -20,10 +20,10 @@ class StockItemFactory extends Factory
      */
     public function definition(): array
     {
-        $sizes = Size::pluck('id');
-        $colors = Color::pluck('id');
-        $products = Product::pluck('id');
-        $addresses = Address::pluck('id');
+        $size = Size::inRandomOrder()->first() ?? Size::factory()->create();
+        $color = Color::inRandomOrder()->first() ?? Color::factory()->create();
+        $product = Product::inRandomOrder()->first() ?? Product::factory()->create();
+        $address = Address::inRandomOrder()->first() ?? Address::factory()->create();
 
         $priceBeforeDiscount = $this->faker->randomNumber(random_int(4, 5));
 
@@ -34,10 +34,10 @@ class StockItemFactory extends Factory
         }
 
         return [
-            'address_id'            => $addresses->random(),
-            'size_id'               => $sizes->random(),
-            'color_id'              => $colors->random(),
-            'product_id'            => $products->random(),
+            'address_id'            => $address->id,
+            'size_id'               => $size->id,
+            'color_id'              => $color->id,
+            'product_id'            => $product->id,
             'sku'                   => $this->faker->unique()->numerify('SKU-######'),
             'quantity'              => $this->faker->numberBetween(100000, 1000000),
             'discount'              => $discount,

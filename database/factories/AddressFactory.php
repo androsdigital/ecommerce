@@ -14,10 +14,10 @@ class AddressFactory extends Factory
 {
     public function definition(): array
     {
-        $city_id = collect(City::pluck('id'))->random();
+        $city = City::inRandomOrder()->first() ?? City::factory()->create();
 
         return [
-            'city_id'       => $city_id,
+            'city_id'       => $city->id,
             'customer_id'   => null,
             'street_type'   => fake()->randomElement(StreetType::values()),
             'street_number' => fake()->bothify('##?'),

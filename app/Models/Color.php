@@ -4,7 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Color extends Model
 {
@@ -14,8 +15,18 @@ class Color extends Model
         'name',
     ];
 
-    public function products(): BelongsToMany
+    public function products(): HasManyThrough
     {
-        return $this->belongsToMany(Product::class, 'stock_items');
+        return $this->hasManyThrough(Product::class, StockItem::class);
+    }
+
+    public function stockItems(): HasMany
+    {
+        return $this->hasMany(StockItem::class);
+    }
+
+    public function sizes(): HasManyThrough
+    {
+        return $this->hasManyThrough(Size::class, StockItem::class);
     }
 }

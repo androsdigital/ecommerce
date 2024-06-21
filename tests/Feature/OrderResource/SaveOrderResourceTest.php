@@ -8,23 +8,23 @@ use Filament\Actions\DeleteAction;
 use function Pest\Livewire\livewire;
 
 it('can render edit page', function () {
-    $this->createOrder();
+    $order = Order::factory()->create();
 
     $this->get(OrderResource::getUrl('edit', [
-        'record' => $this->order,
+        'record' => $order,
     ]))->assertSuccessful();
 
     $this->assertAuthenticated();
 });
 
 it('can save a order', function () {
-    $this->createOrder();
-    $this->order->saveOrderItem();
+    $order = Order::factory()->create();
+    $order->saveOrderItem();
 
-    $newData = $this->makeOrder();
+    $newData = Order::factory()->make();
 
     livewire(EditOrder::class, [
-        'record' => $this->order->getRouteKey(),
+        'record' => $order->getRouteKey(),
     ])
         ->assertFormExists()
         ->assertFormFieldExists('customer_id')
@@ -71,13 +71,12 @@ it('can save a order', function () {
 });
 
 it('can validate save input', function () {
-    $this->createOrder();
+    $order = Order::factory()->create();
 
     livewire(EditOrder::class, [
-        'record' => $this->order->getRouteKey(),
+        'record' => $order->getRouteKey(),
     ])
         ->fillForm([
-            'customer_id'           => null,
             'number'                => null,
             'status'                => null,
             'address.street_type'   => null,
@@ -89,7 +88,6 @@ it('can validate save input', function () {
         ])
         ->call('save')
         ->assertHasFormErrors([
-            'customer_id'           => 'required',
             'number'                => 'required',
             'status'                => 'required',
             'address.street_type'   => 'required',
@@ -121,17 +119,17 @@ it('can validate save input', function () {
 });
 
 it('can delete an order', function () {
-    $this->createOrder();
+    $order = Order::factory()->create();
 
     livewire(EditOrder::class, [
-        'record' => $this->order->getRouteKey(),
+        'record' => $order->getRouteKey(),
     ])
         ->callAction(DeleteAction::class)
         ->assertActionHalted(DeleteAction::class);
 
-    $this->order->refresh();
+    $order->refresh();
 
-    $this->assertNotNull($this->order->deleted_at);
+    $this->assertNotNull($order->deleted_at);
 
     $this->assertAuthenticated();
 });

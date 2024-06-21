@@ -2,11 +2,11 @@
 
 namespace App\Filament\Resources\OrderResource\RelationManagers;
 
+use App\Models\Color;
 use App\Models\OrderItem;
 use App\Models\Product;
-use App\Models\State;
+use App\Models\Size;
 use App\Models\StockItem;
-use Filament\Actions\EditAction;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -14,14 +14,20 @@ use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
+use Filament\Tables\Actions\CreateAction;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class OrderItemsRelationManager extends RelationManager
 {
     protected static ?string $title = 'Items del Pedido';
+
     protected static ?string $modelLabel = 'item';
+
     protected static string $relationship = 'orderItems';
 
     public function form(Form $form): Form
@@ -29,62 +35,12 @@ class OrderItemsRelationManager extends RelationManager
         return $form
             ->schema([
                 Section::make()
-                    ->relationship('stockItem')
-                    ->schema([
-                        Select::make('product_id')
-                            ->label('Producto')
-                            ->live()
-                            ->searchable()
-                            ->native(false)
-                            ->dehydrated(false)
-                            ->options(Product::pluck('name', 'id'))
-                            ->afterStateUpdated(function (Set $set) {
-                                $set('size_id', '');
-                                $set('color_id', '');
-                            }),
-                        Select::make('size_id')
-                            ->label('Talla')
-                            ->live()
-                            ->searchable()
-                            ->native(false)
-                            ->dehydrated(false)
-                            ->options(function (Get $get) {
-                                return Product::find($get('product_id'))->sizes->pluck('name', 'id');
-                            })
-                            ->afterStateUpdated(function (Set $set) {
-                                $set('color_id', '');
-                            }),
-                        Select::make('color_id')
-                            ->searchable()
-                            ->label('City')
-                            ->native(false)
-                            ->options(function (?StockItem $record, Get $get, Set $set) {
-                                if (! is_null($record) && $get('product_id') === null && $get('size_id') === null) {
-                                    $product = $record->product->id;
-                                    $size = $record->size->id;
+                    ->columns(5)
+                    ->schema($this->getStockItemFormSchema()),
 
-                                    $set('product_id', $product);
-                                    $set('size_id', $size);
-                                }
-
-                                return Product::find($get('product_id'))->colors->where('size_id', $get('size_id'))
-                                    ->where('product_id', $get('product_id'))
-                                    ->pluck('name', 'id');
-                            }),
-                    ]),
-
-                TextInput::make('quantity')
-                    ->label('Cantidad')
-                    ->numeric()
-                    ->default(1)
-                    ->required(),
-
-                TextInput::make('shipping_price')
-                    ->label('Costo de envío')
-                    ->disabled()
-                    ->dehydrated()
-                    ->numeric()
-                    ->required(),
+                Section::make()
+                    ->columns(4)
+                    ->schema($this->getPricingFormSchema()),
             ]);
     }
 
@@ -94,19 +50,16 @@ class OrderItemsRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('stockItem.product.name')
                     ->label('Producto')
-                    ->searchable()
                     ->sortable()
                     ->toggleable(),
 
                 TextColumn::make('stockItem.size.name')
                     ->label('Talla')
-                    ->searchable()
                     ->sortable()
                     ->toggleable(),
 
                 TextColumn::make('stockItem.color.name')
                     ->label('Color')
-                    ->searchable()
                     ->sortable()
                     ->toggleable(),
 
@@ -118,26 +71,27 @@ class OrderItemsRelationManager extends RelationManager
 
                 TextColumn::make('unit_price')
                     ->label('Precio Unitario')
-                    ->getStateUsing(function (OrderItem $record): string {
-                        return $record->stockItem->price_before_discount
-                            - $record->stockItem->discount
-                            + $record->shipping_price;
-                    })
                     ->numeric(locale: 'es')
-                    ->toggleable()
-                    ->sortable(),
+                    ->sortable()
+                    ->state(function (OrderItem $record): int {
+                        return $record->stockItem->price_before_discount
+                            - $record->stockItem->discount;
+                    })
+                    ->toggleable(),
 
                 TextColumn::make('price')
-                    ->label('Precio')
-                    ->getStateUsing(function (OrderItem $record): string {
+                    ->label('Total con envío')
+                    ->numeric(locale: 'es')
+                    ->sortable()
+                    ->state(function (OrderItem $record): int {
+                        $record->refresh();
+
                         return ($record->stockItem->price_before_discount
                             - $record->stockItem->discount
                             + $record->shipping_price)
                             * $record->quantity;
                     })
-                    ->numeric(locale: 'es')
-                    ->toggleable()
-                    ->sortable(),
+                    ->toggleable(),
 
                 TextColumn::make('stockItem.price_before_discount')
                     ->label('Precio antes del descuento')
@@ -159,14 +113,155 @@ class OrderItemsRelationManager extends RelationManager
 
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                CreateAction::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                EditAction::make('edit'),
+                DeleteAction::make(),
             ])
-            ->groupedBulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+            ->bulkActions([
+                DeleteBulkAction::make(),
             ]);
+    }
+
+    protected function getStockItemFormSchema(): array
+    {
+        return [
+            Select::make('product_id')
+                ->columnSpan(2)
+                ->label('Producto')
+                ->live()
+                ->required()
+                ->searchable()
+                ->dehydrated(false)
+                ->native(false)
+                ->options(Product::pluck('name', 'id'))
+                ->afterStateUpdated(function (Set $set) {
+                    $set('size_id', '');
+                    $set('color_id', '');
+                }),
+
+            Select::make('size_id')
+                ->label('Talla')
+                ->live()
+                ->required()
+                ->searchable()
+                ->dehydrated(false)
+                ->native(false)
+                ->options(function (Get $get) {
+                    return Size::whereHas('stockItems', function (Builder $query) use ($get) {
+                        $query->where('product_id', $get('product_id'));
+                    })->pluck('name', 'id');
+                })
+                ->afterStateUpdated(function (Set $set) {
+                    $set('color_id', '');
+                }),
+
+            Select::make('color_id')
+                ->searchable()
+                ->live()
+                ->required()
+                ->label('Color')
+                ->dehydrated(false)
+                ->native(false)
+                ->options(function (?OrderItem $record, Get $get, Set $set) {
+                    if (! is_null($record) && $get('product_id') === null && $get('size_id') === null && $get('color_id') === null) {
+                        $product_id = $record->stockItem->product->id;
+                        $size_id = $record->stockItem->size->id;
+                        $color_id = $record->stockItem->color->id;
+
+                        $set('product_id', $product_id);
+                        $set('size_id', $size_id);
+                        $set('color_id', $color_id);
+                    }
+
+                    return Color::whereHas('stockItems', function (Builder $query) use ($get) {
+                        $query->where('product_id', $get('product_id'))
+                            ->where('size_id', $get('size_id'));
+                    })->pluck('name', 'id');
+                })
+                ->afterStateUpdated(function (Set $set, Get $get) {
+                    if ($get('product_id') === null
+                        || $get('size_id') === null
+                        || $get('color_id') === null) {
+                        return;
+                    }
+
+                    $stockItem = StockItem::where('product_id', $get('product_id'))
+                        ->where('size_id', $get('size_id'))
+                        ->where('color_id', $get('color_id'))
+                        ->first();
+
+                    $set('unit_price', function () use ($stockItem): int {
+                        return $stockItem->price_before_discount - $stockItem->discount;
+                    });
+
+                    $set('price', function (Get $get): int {
+                        return
+                            ((int) $get('unit_price') + (int) $get('shipping_price'))
+                            * (int) $get('quantity');
+                    });
+
+                    $set('stock_item_id', $stockItem->id);
+                }),
+
+            TextInput::make('stock_item_id')
+                ->label('Stock Item ID')
+                ->disabled()
+                ->dehydrated(),
+        ];
+    }
+
+    protected function getPricingFormSchema(): array
+    {
+        return [
+            TextInput::make('shipping_price')
+                ->default(0)
+                ->label('Costo de envío')
+                ->live()
+                ->numeric()
+                ->required()
+                ->minValue(0)
+                ->afterStateUpdated(function (Set $set) {
+                    $set('price', function (Get $get): int {
+                        return ((int) $get('unit_price') + (int) $get('shipping_price')) * (int) $get('quantity');
+                    });
+                }),
+
+            TextInput::make('quantity')
+                ->default(1)
+                ->label('Cantidad')
+                ->live()
+                ->numeric()
+                ->minValue(1)
+                ->required()
+                ->afterStateUpdated(function (Set $set) {
+                    $set('price', function (Get $get): int {
+                        return ((int) $get('unit_price') + (int) $get('shipping_price')) * (int) $get('quantity');
+                    });
+                }),
+
+            TextInput::make('unit_price')
+                ->label('Precio unitario')
+                ->numeric()
+                ->disabled()
+                ->dehydrated(false)
+                ->formatStateUsing(function (?OrderItem $record): int {
+                    if (is_null($record)) {
+                        return 0;
+                    }
+
+                    return $record->stockItem->price_before_discount - $record->stockItem->discount;
+                }),
+
+            TextInput::make('price')
+                ->label('Total con envío')
+                ->numeric()
+                ->disabled()
+                ->dehydrated(false)
+                ->formatStateUsing(function (Get $get): int {
+                    return ((int) $get('unit_price') + (int) $get('shipping_price')) * (int) $get('quantity');
+                }),
+        ];
     }
 }

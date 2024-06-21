@@ -155,18 +155,18 @@ class OrderResource extends Resource
             Select::make('customer_id')
                 ->label('Comprador')
                 ->relationship('customer', 'name')
-                ->searchable()
-                ->required(),
+                ->disabled(),
 
             ToggleButtons::make('status')
                 ->label('Estado')
                 ->inline()
                 ->options(OrderStatus::class)
+                ->columnSpanFull()
                 ->required(),
 
             Section::make()
                 ->heading('Dirección')
-                ->collapsible()
+                ->collapsed()
                 ->relationship('address')
                 ->schema(static::getAddressFormSchema()),
 
@@ -181,35 +181,35 @@ class OrderResource extends Resource
         return [
             Placeholder::make('total_price')
                 ->label('Total')
-                ->content(fn (Order $record): ?string => number_format($record->total_price, thousands_separator: '.')),
+                ->content(fn (Order $record): string => number_format($record->total_price, thousands_separator: '.')),
 
             Placeholder::make('total_price_before_discount')
                 ->label('SubTotal')
-                ->content(fn (Order $record): ?string => number_format($record->total_price_before_discount, thousands_separator: '.')),
+                ->content(fn (Order $record): string => number_format($record->total_price_before_discount, thousands_separator: '.')),
 
             Placeholder::make('total_items_discount')
                 ->label('Descuento de los Productos')
-                ->content(fn (Order $record): ?string => number_format($record->total_items_discount, thousands_separator: '.')),
+                ->content(fn (Order $record): string => number_format($record->total_items_discount, thousands_separator: '.')),
 
             Placeholder::make('discount')
                 ->label('Descuento del Pedido')
-                ->content(fn (Order $record): ?string => number_format($record->discount, thousands_separator: '.')),
+                ->content(fn (Order $record): string => number_format($record->discount, thousands_separator: '.')),
 
             Placeholder::make('total_discount')
                 ->label('Descuento Total')
-                ->content(fn (Order $record): ?string => number_format($record->total_discount, thousands_separator: '.')),
+                ->content(fn (Order $record): string => number_format($record->total_discount, thousands_separator: '.')),
 
             Placeholder::make('total_quantity')
                 ->label('Cantidad de Productos')
-                ->content(fn (Order $record): ?string => number_format($record->total_quantity, thousands_separator: '.')),
+                ->content(fn (Order $record): string => number_format($record->total_quantity, thousands_separator: '.')),
 
             Placeholder::make('created_at')
                 ->label('Creado')
-                ->content(fn (Order $record): ?string => $record->created_at?->diffForHumans()),
+                ->content(fn (Order $record): string => $record->created_at?->diffForHumans()),
 
             Placeholder::make('updated_at')
                 ->label('Modificado')
-                ->content(fn (Order $record): ?string => $record->updated_at?->diffForHumans()),
+                ->content(fn (Order $record): string => $record->updated_at?->diffForHumans()),
         ];
     }
 

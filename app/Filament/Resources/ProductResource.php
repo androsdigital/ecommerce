@@ -39,6 +39,7 @@ class ProductResource extends Resource
                     ->label('Categoría')
                     ->relationship('category', 'name')
                     ->required(),
+
                 TextInput::make('name')
                     ->label('Nombre')
                     ->maxLength(255)
@@ -47,18 +48,21 @@ class ProductResource extends Resource
                     ->afterStateUpdated(
                         fn (string $operation, $state, Set $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null
                     ),
+
                 TextInput::make('slug')
                     ->disabled()
                     ->dehydrated()
                     ->maxLength(255)
                     ->required()
                     ->unique(Product::class, 'slug', ignoreRecord: true),
+
                 Textarea::make('description')
                     ->label('Descripción')
                     ->minLength(30)
                     ->maxLength(1000)
                     ->required()
                     ->columnSpanFull(),
+
                 Repeater::make('stockItems')
                     ->label('Inventario')
                     ->addActionLabel('Agregar elemento')
@@ -72,17 +76,20 @@ class ProductResource extends Resource
                             ->label('Talla')
                             ->relationship('size', 'name')
                             ->required(),
+
                         Select::make('color_id')
                             ->label('Color')
                             ->relationship('color', 'name')
                             ->required(),
+
                         TextInput::make('quantity')
                             ->label('Cantidad')
                             ->required()
                             ->integer()
                             ->minValue(0)
-                            ->maxValue(9999)
+                            ->maxValue(999999)
                             ->numeric(),
+
                         TextInput::make('sku')
                             ->label('SKU')
                             ->default(fn (Set $set) => 'SKU-' . random_int(100000, 999999))
@@ -92,6 +99,7 @@ class ProductResource extends Resource
                             ->dehydrated()
                             ->maxLength(10),
                     ]),
+
                 Repeater::make('features')
                     ->label('Características')
                     ->addActionLabel('Agregar característica')
@@ -103,11 +111,13 @@ class ProductResource extends Resource
                             ->maxLength(50)
                             ->required()
                             ->alpha(),
+
                         TextInput::make('value')
                             ->label('Valor')
                             ->maxLength(500)
                             ->required(),
                     ]),
+
                 Repeater::make('comments')
                     ->label('Comentarios')
                     ->addActionLabel('Agregar comentario')
@@ -119,6 +129,7 @@ class ProductResource extends Resource
                             ->maxLength(500)
                             ->required(),
                     ]),
+
                 SpatieMediaLibraryFileUpload::make('photos')
                     ->label('Fotos')
                     ->multiple()
@@ -127,21 +138,7 @@ class ProductResource extends Resource
                     ->maxFiles(10)
                     ->maxSize(4000)
                     ->columnSpanFull(),
-                TextInput::make('price')
-                    ->label('Precio')
-                    ->required()
-                    ->integer()
-                    ->minValue(0)
-                    ->maxValue(10000000)
-                    ->numeric(),
-                TextInput::make('price_before_discount')
-                    ->label('Precio antes de descuento')
-                    ->default('price')
-                    ->gte('price')
-                    ->integer()
-                    ->minValue(0)
-                    ->maxValue(10000000)
-                    ->numeric(),
+
             ]);
     }
 

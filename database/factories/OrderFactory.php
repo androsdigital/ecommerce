@@ -32,7 +32,7 @@ class OrderFactory extends Factory
             'total_shipping_price'        => 0,
             'total_quantity'              => 0,
             'status'                      => $this->faker->randomElement(OrderStatus::values()),
-            'notes'                       => json_encode($this->faker->realText(100)),
+            'notes'                       => $this->faker->realText(100),
             'created_at'                  => $this->faker->dateTimeBetween('-2 month'),
             'updated_at'                  => $this->faker->dateTimeBetween('-1 month'),
         ];

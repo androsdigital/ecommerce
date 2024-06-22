@@ -26,7 +26,7 @@ return new class extends Migration
             $table->unsignedBigInteger('total_shipping_price');
             $table->unsignedInteger('total_quantity');
             $table->enum('status', OrderStatus::values())->default(OrderStatus::Processing);
-            $table->json('notes')->nullable();
+            $table->text('notes')->nullable();
 
             $table->timestamps();
 

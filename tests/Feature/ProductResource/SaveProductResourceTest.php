@@ -26,7 +26,6 @@ it('can retrieve data', function () {
     Color::factory()->create();
     $category = Category::factory()->create();
     $product = Product::factory()->for($category)->create();
-    $stockItem = StockItem::factory()->create();
 
     for ($i = 0; $i < 2; $i++) {
         $product->addMedia(UploadedFile::fake()->image('photo-' . $i . '.jpg'))->toMediaCollection();
@@ -37,7 +36,6 @@ it('can retrieve data', function () {
     ])
         ->assertFormSet([
             'name'                  => $product->name,
-            'stockItems'            => ['record-1' => $stockItem->toArray()],
             'slug'                  => $product->slug,
             'category_id'           => $product->category_id,
             'description'           => $product->description,

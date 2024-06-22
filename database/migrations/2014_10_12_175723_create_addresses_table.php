@@ -26,7 +26,9 @@ return new class extends Migration
             $table->geometry('location')->nullable();
 
             $table->string('full_address')->virtualAs(
-                "CONCAT(street_type, ' ', street_number, ' # ', first_number, ' - ', second_number)"
+                config('database.default') === 'sqlite'
+                    ? "street_type || ' ' || street_number || ' # ' || first_number || ' - ' || second_number"
+                    : "CONCAT(street_type, ' ', street_number, ' # ', first_number, ' - ', second_number)"
             );
 
             $table->timestamps();

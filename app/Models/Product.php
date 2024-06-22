@@ -5,8 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -22,8 +22,6 @@ class Product extends Model implements HasMedia
         'name',
         'slug',
         'description',
-        'price',
-        'price_before_discount',
         'features',
         'comments',
     ];
@@ -52,14 +50,14 @@ class Product extends Model implements HasMedia
         return $this->belongsTo(Category::class);
     }
 
-    public function size(): BelongsToMany
+    public function sizes(): HasManyThrough
     {
-        return $this->belongsToMany(Size::class, 'stock_items')->withPivot('quantity');
+        return $this->hasManyThrough(Size::class, StockItem::class);
     }
 
-    public function color(): BelongsToMany
+    public function colors(): HasManyThrough
     {
-        return $this->belongsToMany(Color::class, 'stock_items')->withPivot('quantity');
+        return $this->hasManyThrough(Color::class, StockItem::class);
     }
 
     public function stockItems(): HasMany

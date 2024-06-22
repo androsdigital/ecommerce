@@ -3,12 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\Pivot;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class StockItem extends Pivot
+class StockItem extends Model implements HasMedia
 {
     use HasFactory;
+    use InteractsWithMedia;
 
     protected $table = 'stock_items';
 
@@ -25,5 +28,10 @@ class StockItem extends Pivot
     public function color(): BelongsTo
     {
         return $this->belongsTo(Color::class);
+    }
+
+    public function address(): BelongsTo
+    {
+        return $this->belongsTo(Address::class);
     }
 }

@@ -2,12 +2,15 @@
 
 namespace App\Enums;
 
+use App\Traits\Arrayable;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
 enum OrderStatus: string implements HasColor, HasIcon, HasLabel
 {
+    use Arrayable;
+
     case Processing = 'processing';
     case Shipped = 'shipped';
     case Delivered = 'delivered';
@@ -17,9 +20,9 @@ enum OrderStatus: string implements HasColor, HasIcon, HasLabel
     {
         return match ($this) {
             self::Processing => 'En Proceso',
-            self::Shipped    => 'Enviada',
-            self::Delivered  => 'Entregada',
-            self::Cancelled  => 'Cancelada',
+            self::Shipped    => 'Enviado',
+            self::Delivered  => 'Entregado',
+            self::Cancelled  => 'Cancelado',
         };
     }
 

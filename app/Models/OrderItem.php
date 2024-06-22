@@ -13,8 +13,8 @@ class OrderItem extends Model
     protected $fillable = [
         'order_id',
         'stock_item_id',
+        'shipping_price',
         'quantity',
-        'unit_price',
     ];
 
     public function order(): BelongsTo

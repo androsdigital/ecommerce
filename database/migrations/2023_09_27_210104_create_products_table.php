@@ -14,8 +14,6 @@ return new class extends Migration
             $table->string('name', 255);
             $table->string('slug', 255)->unique();
             $table->text('description')->charset('binary');
-            $table->integer('price');
-            $table->integer('price_before_discount');
             $table->json('features')->nullable();
             $table->json('comments')->nullable();
             $table->timestamps();

@@ -11,11 +11,7 @@ class OrderController extends Controller
 {
     public function store(Product $product): RedirectResponse
     {
-        $order = $product->orders()->create([
-            'price' => $product->price,
-        ]);
-
-        return redirect()->route('order.show', $order);
+        return redirect()->route('order.show');
     }
 
     public function show(Order $order): View

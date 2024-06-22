@@ -16,10 +16,10 @@ class CityFactory extends Factory
      */
     public function definition(): array
     {
-        $states = State::pluck('id');
+        $state = State::inRandomOrder()->first() ?? State::factory()->create();
 
         return [
-            'state_id' => $states->random(),
+            'state_id' => $state->id,
             'name'     => fake()->word(),
             'code'     => fake()->numerify('CIU-####'),
         ];

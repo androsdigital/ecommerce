@@ -26,7 +26,6 @@ it('can retrieve data', function () {
     Color::factory()->create();
     $category = Category::factory()->create();
     $product = Product::factory()->for($category)->create();
-    $stockItem = StockItem::factory()->create();
 
     for ($i = 0; $i < 2; $i++) {
         $product->addMedia(UploadedFile::fake()->image('photo-' . $i . '.jpg'))->toMediaCollection();
@@ -37,7 +36,6 @@ it('can retrieve data', function () {
     ])
         ->assertFormSet([
             'name'                  => $product->name,
-            'stockItems'            => ['record-1' => $stockItem->toArray()],
             'slug'                  => $product->slug,
             'category_id'           => $product->category_id,
             'description'           => $product->description,
@@ -78,49 +76,26 @@ it('can save a product', function () {
         ->assertFormExists()
         ->assertFormFieldExists('name')
         ->assertFormFieldExists('category_id')
-        ->assertFormFieldExists('stockItems')
         ->assertFormFieldExists('slug')
         ->assertFormFieldExists('description')
         ->assertFormFieldExists('photos')
-        ->assertFormFieldExists('price')
-        ->assertFormFieldExists('price_before_discount')
         ->fillForm([
             'category_id' => $newData->category_id,
             'name'        => $newData->name,
-            'stockItems'  => [
-                [
-                    'sku'      => $stockItem->sku,
-                    'color_id' => $stockItem->color_id,
-                    'size_id'  => $stockItem->size_id,
-                    'quantity' => $stockItem->quantity,
-                ],
-            ],
-            'slug'                  => $newData->slug,
-            'description'           => $newData->description,
-            'photos'                => $photos,
-            'price'                 => $newData->price,
-            'price_before_discount' => $newData->price_before_discount,
-            'features'              => $newData->features,
-            'comments'              => $newData->comments,
+            'slug'        => $newData->slug,
+            'description' => $newData->description,
+            'photos'      => $photos,
+            'features'    => $newData->features,
+            'comments'    => $newData->comments,
         ])
         ->call('save')
         ->assertHasNoFormErrors();
 
     $this->assertDatabaseHas(Product::class, [
-        'category_id'           => $newData->category_id,
-        'name'                  => $newData->name,
-        'slug'                  => $newData->slug,
-        'description'           => $newData->description,
-        'price'                 => $newData->price,
-        'price_before_discount' => $newData->price_before_discount,
-    ]);
-
-    $this->assertDatabaseHas('stock_items', [
-        'product_id' => $product->id,
-        'color_id'   => $stockItem->color_id,
-        'size_id'    => $stockItem->size_id,
-        'sku'        => $stockItem->sku,
-        'quantity'   => $stockItem->quantity,
+        'category_id' => $newData->category_id,
+        'name'        => $newData->name,
+        'slug'        => $newData->slug,
+        'description' => $newData->description,
     ]);
 
     $product = Product::query()->where('slug', $newData->slug)->first();
@@ -130,8 +105,6 @@ it('can save a product', function () {
     $this->assertEquals($newData->comments[0], $product->comments[2]);
     $this->assertEquals($newData->comments[1], $product->comments[3]);
 
-    $this->assertCount(4, $product->getMedia());
-
     $this->assertAuthenticated();
 });
 
@@ -140,7 +113,7 @@ it('can validate edit input', function () {
     $product = Product::factory()->for($category)->create();
     Size::factory()->create();
     Color::factory()->create();
-    $stockItem = StockItem::factory()->create();
+
     $bigPhoto = UploadedFile::fake()->image('big-photo.jpg')->size(5000);
     $photos = [];
 
@@ -155,16 +128,7 @@ it('can validate edit input', function () {
             'name'        => null,
             'category_id' => null,
             'description' => null,
-            'price'       => null,
-            'stockItems'  => [
-                [
-                    'sku'      => null,
-                    'color_id' => null,
-                    'size_id'  => null,
-                    'quantity' => null,
-                ],
-            ],
-            'features' => [
+            'features'    => [
                 [
                     'name'  => null,
                     'value' => null,
@@ -178,28 +142,17 @@ it('can validate edit input', function () {
         ])
         ->call('save')
         ->assertHasFormErrors([
-            'name'                  => 'required',
-            'category_id'           => 'required',
-            'description'           => 'required',
-            'price'                 => 'required',
-            'stockItems.0.sku'      => 'required',
-            'stockItems.0.color_id' => 'required',
-            'stockItems.0.size_id'  => 'required',
-            'stockItems.0.quantity' => 'required',
-            'features.0.name'       => 'required',
-            'features.0.value'      => 'required',
-            'comments.0.comment'    => 'required',
+            'name'               => 'required',
+            'category_id'        => 'required',
+            'description'        => 'required',
+            'features.0.name'    => 'required',
+            'features.0.value'   => 'required',
+            'comments.0.comment' => 'required',
         ])
         ->fillForm([
             'name'        => str_repeat('a', 256),
             'description' => str_repeat('a', 1001),
-            'stockItems'  => [
-                [
-                    'sku'      => str_repeat('a', 11),
-                    'quantity' => 10000,
-                ],
-            ],
-            'features' => [
+            'features'    => [
                 [
                     'name'  => str_repeat('a', 51),
                     'value' => str_repeat('a', 501),
@@ -210,31 +163,19 @@ it('can validate edit input', function () {
                     'comment' => str_repeat('a', 501),
                 ],
             ],
-            'price'                 => 10000001,
-            'price_before_discount' => 10000001,
-            'photos'                => $photos,
+            'photos' => $photos,
         ])
         ->call('save')
         ->assertHasFormErrors([
-            'name'                  => 'max',
-            'description'           => 'max',
-            'stockItems.0.sku'      => 'max',
-            'stockItems.0.quantity' => 'max',
-            'features.0.name'       => 'max',
-            'features.0.value'      => 'max',
-            'comments.0.comment'    => 'max',
-            'price'                 => 'max',
-            'price_before_discount' => 'max',
-            'photos'                => 'max',
+            'name'               => 'max',
+            'description'        => 'max',
+            'features.0.name'    => 'max',
+            'features.0.value'   => 'max',
+            'comments.0.comment' => 'max',
         ])
         ->fillForm([
             'description' => 'a',
-            'stockItems'  => [
-                [
-                    'quantity' => -1,
-                ],
-            ],
-            'features' => [
+            'features'    => [
                 [
                     'name' => 'a',
                 ],
@@ -244,51 +185,31 @@ it('can validate edit input', function () {
                     'comment' => 'a',
                 ],
             ],
-            'price'                 => -1,
-            'price_before_discount' => -1,
         ])
         ->call('save')
         ->assertHasFormErrors([
-            'description'           => 'min',
-            'stockItems.0.quantity' => 'min',
-            'comments.0.comment'    => 'min',
-            'price'                 => 'min',
-            'price_before_discount' => 'min',
+            'description'        => 'min',
+            'comments.0.comment' => 'min',
         ])
         ->fillForm([
-            'stockItems' => [
-                [
-                    'sku'      => $stockItem->sku,
-                    'quantity' => 100.4,
-                ],
-            ],
             'features' => [
                 [
                     'name' => 100,
                 ],
             ],
-            'price'                 => 100.4,
-            'price_before_discount' => 102.4,
         ])
         ->call('save')
         ->assertHasFormErrors([
-            'stockItems.0.sku'      => 'unique',
-            'stockItems.0.quantity' => 'integer',
-            'features.0.name'       => 'alpha',
-            'price'                 => 'integer',
-            'price_before_discount' => 'integer',
+            'features.0.name' => 'alpha',
         ])
         ->fillForm([
             'photos' => [
                 $bigPhoto,
             ],
-            'price'                 => 100,
-            'price_before_discount' => 99,
         ])
         ->call('save')
         ->assertHasFormErrors([
-            'price_before_discount' => 'gte',
-            'photos'                => 'max',
+            'photos' => 'max',
         ]);
 
     $this->assertAuthenticated();

@@ -1,7 +1,7 @@
 <?php
 
 use App\Filament\Resources\OrderResource\Pages\EditOrder;
-use App\Filament\Resources\OrderResource\RelationManagers\OrderItemsRelationManager;
+use App\Filament\Resources\OrderResource\RelationManagers\OrderItemRelationManager;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Filament\Tables\Actions\EditAction;
@@ -15,7 +15,7 @@ it('can render order items edit modal', function () {
 
     $orderItem = $order->orderItems->first();
 
-    livewire(OrderItemsRelationManager::class, [
+    livewire(OrderItemRelationManager::class, [
         'ownerRecord' => $order,
         'pageClass'   => EditOrder::class,
     ])
@@ -33,7 +33,7 @@ it('can edit order item', function () {
     $orderItem = $order->orderItems->first();
     $newData = OrderItem::factory()->make();
 
-    livewire(OrderItemsRelationManager::class, [
+    livewire(OrderItemRelationManager::class, [
         'ownerRecord' => $order,
         'pageClass'   => EditOrder::class,
     ])
@@ -63,7 +63,7 @@ it('can load order item data', function () {
 
     $orderItem = $order->orderItems->first();
 
-    livewire(OrderItemsRelationManager::class, [
+    livewire(OrderItemRelationManager::class, [
         'ownerRecord' => $order,
         'pageClass'   => EditOrder::class,
     ])
@@ -87,7 +87,7 @@ it('can validate edit order item input', function () {
 
     $orderItem = $order->orderItems->first();
 
-    livewire(OrderItemsRelationManager::class, [
+    livewire(OrderItemRelationManager::class, [
         'ownerRecord' => $order,
         'pageClass'   => EditOrder::class,
     ])

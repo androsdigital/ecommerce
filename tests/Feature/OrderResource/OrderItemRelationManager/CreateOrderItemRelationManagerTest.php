@@ -2,7 +2,7 @@
 <?php
 
 use App\Filament\Resources\OrderResource\Pages\EditOrder;
-use App\Filament\Resources\OrderResource\RelationManagers\OrderItemsRelationManager;
+use App\Filament\Resources\OrderResource\RelationManagers\OrderItemRelationManager;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Filament\Tables\Actions\CreateAction;
@@ -14,7 +14,7 @@ it('can render order items create modal', function () {
         ->has(OrderItem::factory()->count(10))
         ->create();
 
-    livewire(OrderItemsRelationManager::class, [
+    livewire(OrderItemRelationManager::class, [
         'ownerRecord' => $order,
         'pageClass'   => EditOrder::class,
     ])
@@ -31,7 +31,7 @@ it('can create order item', function () {
 
     $newData = OrderItem::factory()->make();
 
-    livewire(OrderItemsRelationManager::class, [
+    livewire(OrderItemRelationManager::class, [
         'ownerRecord' => $order,
         'pageClass'   => EditOrder::class,
     ])
@@ -59,7 +59,7 @@ it('can validate create order item input', function () {
         ->has(OrderItem::factory()->count(10))
         ->create();
 
-    livewire(OrderItemsRelationManager::class, [
+    livewire(OrderItemRelationManager::class, [
         'ownerRecord' => $order,
         'pageClass'   => EditOrder::class,
     ])

@@ -20,8 +20,9 @@ return new class extends Migration
             $table->foreignIdFor(Size::class)->constrained();
             $table->foreignIdFor(Address::class)->constrained();
 
-            $table->string('sku', 10)->unique();
+            $table->string('sku', 14)->unique();
             $table->integer('quantity');
+            $table->unsignedBigInteger('price');
             $table->unsignedBigInteger('price_before_discount');
             $table->unsignedBigInteger('discount');
 

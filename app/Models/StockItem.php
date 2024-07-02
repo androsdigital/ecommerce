@@ -15,6 +15,16 @@ class StockItem extends Model implements HasMedia
 
     protected $table = 'stock_items';
 
+    protected $fillable = [
+        'product_id',
+        'size_id',
+        'color_id',
+        'quantity',
+        'price',
+        'price_before_discount',
+        'discount',
+    ];
+
     public function size(): BelongsTo
     {
         return $this->belongsTo(Size::class);

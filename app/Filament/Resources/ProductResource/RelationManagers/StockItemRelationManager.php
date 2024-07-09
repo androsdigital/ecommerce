@@ -58,6 +58,11 @@ class StockItemRelationManager extends RelationManager
     {
         return $table
             ->columns([
+                TextColumn::make('sku')
+                    ->label('SKU')
+                    ->sortable()
+                    ->toggleable(),
+
                 TextColumn::make('size.name')
                     ->label('Talla')
                     ->sortable()
@@ -122,12 +127,11 @@ class StockItemRelationManager extends RelationManager
                 ->options(Color::pluck('name', 'id')),
 
             TextInput::make('sku')
+                ->dehydrated()
                 ->label('SKU')
-                ->default(fake()->unique()->numerify('SKU-##########'))
+                ->default(fake()->numerify('SKU-##########'))
                 ->required()
                 ->unique(StockItem::class, 'sku', ignoreRecord: true)
-                ->disabled()
-                ->dehydrated()
                 ->maxLength(14),
 
             Section::make()

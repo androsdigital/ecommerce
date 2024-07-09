@@ -16,6 +16,7 @@ class StockItem extends Model implements HasMedia
     protected $table = 'stock_items';
 
     protected $fillable = [
+        'sku',
         'product_id',
         'size_id',
         'color_id',

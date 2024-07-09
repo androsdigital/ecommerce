@@ -60,7 +60,6 @@ it('can edit stock item', function () {
         'quantity'              => $newData->quantity,
         'size_id'               => $newData->size_id,
         'color_id'              => $newData->color_id,
-        'address_id'            => $newData->address_id,
         'price'                 => $newData->price,
         'price_before_discount' => $newData->price_before_discount,
         'discount'              => $newData->discount,

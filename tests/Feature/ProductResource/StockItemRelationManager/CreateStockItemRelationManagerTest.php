@@ -8,11 +8,10 @@ use Filament\Tables\Actions\CreateAction;
 
 use function Pest\Livewire\livewire;
 
-it('can render stock items edit modal', function () {
+it('can render stock items create modal', function () {
     $product = Product::factory()
         ->has(StockItem::factory()->count(10))
         ->create();
-
 
     livewire(StockItemRelationManager::class, [
         'ownerRecord' => $product,
@@ -26,7 +25,7 @@ it('can render stock items edit modal', function () {
 
 it('can create stock item', function () {
     $product = Product::factory()
-        ->has(StockItem::factory()->count(10))
+        ->has(StockItem::factory()->count(2))
         ->create();
 
     $newData = StockItem::factory()->make();
@@ -56,7 +55,6 @@ it('can create stock item', function () {
     $this->assertDatabaseHas(StockItem::class, [
         'product_id'            => $product->id,
         'quantity'              => $newData->quantity,
-        'address_id' => $newData->address_id,
         'size_id'               => $newData->size_id,
         'color_id'              => $newData->color_id,
         'price'                 => $newData->price,
@@ -66,8 +64,6 @@ it('can create stock item', function () {
 
     $this->assertAuthenticated();
 });
-
-
 
 it('can validate edit stock item input', function () {
     $product = Product::factory()

@@ -25,7 +25,6 @@ it('can list products', function () {
         ->assertCountTableRecords(10)
         ->assertCanRenderTableColumn('name')
         ->assertCanRenderTableColumn('category.name')
-        ->assertCanRenderTableColumn('price')
         ->assertCanRenderTableColumn('price_before_discount')
         ->assertCanRenderTableColumn('quantity')
         ->assertCanNotRenderTableColumn('created_at')

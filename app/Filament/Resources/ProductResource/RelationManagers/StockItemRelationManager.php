@@ -43,14 +43,15 @@ class StockItemRelationManager extends RelationManager
                     ->columns(2)
                     ->schema($this->getPricingFormSchema()),
 
-                //                SpatieMediaLibraryFileUpload::make('photos')
-                //                    ->label('Fotos')
-                //                    ->multiple()
-                //                    ->image()
-                //                    ->reorderable()
-                //                    ->maxFiles(10)
-                //                    ->maxSize(4000)
-                //                    ->columnSpanFull(),
+                SpatieMediaLibraryFileUpload::make('photos')
+                    ->label('Fotos')
+                    ->multiple()
+                    ->image()
+                    ->reorderable()
+                    ->maxFiles(10)
+                    ->maxSize(4000)
+                    ->columnSpanFull(),
+
             ]);
     }
 
@@ -101,7 +102,7 @@ class StockItemRelationManager extends RelationManager
                 CreateAction::make(),
             ])
             ->actions([
-                EditAction::make('edit'),
+                EditAction::make(),
                 DeleteAction::make(),
             ])
             ->bulkActions([
@@ -179,7 +180,7 @@ class StockItemRelationManager extends RelationManager
                 ->numeric()
                 ->required()
                 ->maxValue(function (Get $get): ?int {
-                    return $get('price_before_discount');
+                    return (int) $get('price_before_discount');
                 })
                 ->minValue(0)
                 ->afterStateUpdated(function (Get $get, Set $set): void {

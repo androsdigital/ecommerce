@@ -80,7 +80,7 @@ class ProductResource extends Resource
                     ]),
 
                 Repeater::make('comments')
-                    ->label('Comentarios')
+                    ->label(false)
                     ->addActionLabel('Agregar comentario')
                     ->defaultItems(0)
                     ->schema([
@@ -90,7 +90,7 @@ class ProductResource extends Resource
                             ->maxLength(500)
                             ->required(),
                     ]),
-            ]);
+            ])->columns(3);
     }
 
     public static function table(Table $table): Table

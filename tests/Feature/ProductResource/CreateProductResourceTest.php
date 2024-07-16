@@ -2,11 +2,7 @@
 
 use App\Filament\Resources\ProductResource;
 use App\Filament\Resources\ProductResource\Pages\CreateProduct;
-use App\Models\Category;
-use App\Models\Color;
 use App\Models\Product;
-use App\Models\Size;
-use Illuminate\Http\UploadedFile;
 
 use function Pest\Livewire\livewire;
 
@@ -17,16 +13,7 @@ it('can render create page', function () {
 });
 
 it('can create a product', function () {
-    Size::factory()->create();
-    Color::factory()->create();
-    $category = Category::factory()->create();
-    $newData = Product::factory()->for($category)->create();
-
-    $photos = [];
-
-    for ($i = 0; $i < 3; $i++) {
-        $photos[] = UploadedFile::fake()->image('photo-' . $i . '.jpg');
-    }
+    $newData = Product::factory()->create();
 
     livewire(CreateProduct::class)
         ->assertFormExists()
@@ -34,7 +21,6 @@ it('can create a product', function () {
         ->assertFormFieldExists('category_id')
         ->assertFormFieldExists('slug')
         ->assertFormFieldExists('description')
-        ->assertFormFieldExists('photos')
         ->assertFormFieldExists('features')
         ->assertFormFieldExists('comments')
         ->set('data.stockItems')
@@ -43,7 +29,6 @@ it('can create a product', function () {
             'name'        => $newData->name,
             'slug'        => $newData->slug . '-new',
             'description' => $newData->description,
-            'photos'      => $photos,
             'features'    => $newData->features,
             'comments'    => $newData->comments,
         ])
@@ -62,23 +47,11 @@ it('can create a product', function () {
     $this->assertEquals($newData->features, $product->features);
     $this->assertEquals($newData->comments, $product->comments);
 
-    $this->assertCount(3, $product->getMedia());
-
     $this->assertAuthenticated();
 });
 
 it('can validate create input', function () {
-    Size::factory()->create();
-    Color::factory()->create();
-    Category::factory()->create();
     Product::factory()->create();
-
-    $bigPhoto = UploadedFile::fake()->image('big-photo.jpg')->size(5000);
-    $photos = [];
-
-    for ($i = 0; $i < 12; $i++) {
-        $photos[] = UploadedFile::fake()->image('photo-' . $i . '.jpg');
-    }
 
     livewire(CreateProduct::class)
         ->fillForm([
@@ -109,7 +82,6 @@ it('can validate create input', function () {
         ->fillForm([
             'name'        => str_repeat('a', 256),
             'description' => str_repeat('a', 1001),
-            'photos'      => $photos,
             'features'    => [
                 [
                     'name'  => str_repeat('a', 51),
@@ -129,7 +101,6 @@ it('can validate create input', function () {
             'features.0.name'    => 'max',
             'features.0.value'   => 'max',
             'comments.0.comment' => 'max',
-            'photos'             => 'max',
         ])
         ->fillForm([
             'description' => 'a',
@@ -159,36 +130,7 @@ it('can validate create input', function () {
         ->call('create')
         ->assertHasFormErrors([
             'features.0.name' => 'alpha',
-        ])
-        ->fillForm([
-            'photos' => [
-                $bigPhoto,
-            ],
-        ])
-        ->call('create')
-        ->assertHasFormErrors([
-            'photos' => 'max',
         ]);
 
     $this->assertAuthenticated();
-});
-
-it('validate photos file type', function () {
-    $category = Category::factory()->create();
-    $product = Product::factory()->for($category)->make();
-
-    $video = UploadedFile::fake()->create('video.mp4');
-
-    $component = livewire(CreateProduct::class, [
-        'record' => $product->getRouteKey(),
-    ])->fillForm([
-        'photos' => [
-            $video,
-        ],
-    ])->call('create');
-
-    $this->assertEquals(
-        'The fotos field must be a file of type: image/*.',
-        $component->errors()->getMessages()['data.photos'][0]
-    );
 });

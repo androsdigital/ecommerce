@@ -135,8 +135,8 @@ it('can sort orders', function () {
 it('can filter by creation date', function () {
     $orders = Order::factory(10)->create();
 
-    $ordersFromMonthAgo = $orders->where('created_at', '>=', now()->subMonth());
-    $ordersUntilMonthAgo = $orders->where('created_at', '<', now()->subMonth());
+    $ordersFromMonthAgo = $orders->where('created_at', '>', now()->subMonth());
+    $ordersUntilMonthAgo = $orders->where('created_at', '<=', now()->subMonth());
 
     livewire(ListOrders::class)
         ->assertCanSeeTableRecords($orders)

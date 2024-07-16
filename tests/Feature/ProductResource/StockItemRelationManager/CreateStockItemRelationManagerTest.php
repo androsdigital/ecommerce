@@ -5,6 +5,7 @@ use App\Filament\Resources\ProductResource\RelationManagers\StockItemRelationMan
 use App\Models\Product;
 use App\Models\StockItem;
 use Filament\Tables\Actions\CreateAction;
+use Illuminate\Http\UploadedFile;
 
 use function Pest\Livewire\livewire;
 
@@ -24,11 +25,15 @@ it('can render stock items create modal', function () {
 });
 
 it('can create stock item', function () {
-    $product = Product::factory()
-        ->has(StockItem::factory()->count(2))
-        ->create();
+    $product = Product::factory()->create();
 
     $newData = StockItem::factory()->make();
+
+    $photos = [];
+
+    for ($i = 0; $i < 3; $i++) {
+        $photos[] = UploadedFile::fake()->image('photo-' . $i . '.png');
+    }
 
     livewire(StockItemRelationManager::class, [
         'ownerRecord' => $product,
@@ -49,6 +54,7 @@ it('can create stock item', function () {
             'address.state_id'      => $newData->address->state_id,
             'address.city_id'       => $newData->address->city_id,
             'address.observation'   => $newData->address->observation,
+            'photos'                => $photos,
         ])
         ->assertHasNoTableActionErrors();
 
@@ -62,6 +68,12 @@ it('can create stock item', function () {
         'discount'              => $newData->discount,
     ]);
 
+    $this->assertDatabaseHas('media', [
+        'model_type' => StockItem::class,
+        'model_id'   => $product->stockItems->first()->id,
+        'mime_type'  => 'image/png',
+    ]);
+
     $this->assertAuthenticated();
 });
 
@@ -72,11 +84,18 @@ it('can validate edit stock item input', function () {
 
     $stockItem = $product->stockItems->first();
 
+    $bigPhoto = UploadedFile::fake()->image('big-photo.jpg')->size(5000);
+    $photos = [];
+
+    for ($i = 0; $i < 12; $i++) {
+        $photos[] = UploadedFile::fake()->image('photo-' . $i . '.jpg');
+    }
+
     livewire(StockItemRelationManager::class, [
         'ownerRecord' => $product,
         'pageClass'   => EditProduct::class,
     ])
-        ->callTableAction(CreateAction::class, data: [
+        ->callTableAction(CreateAction::class, record: $stockItem, data: [
             'size_id'               => null,
             'color_id'              => null,
             'quantity'              => null,
@@ -120,6 +139,7 @@ it('can validate edit stock item input', function () {
             'address.second_number' => str_repeat('0', 32),
             'address.phone'         => str_repeat('0', 32),
             'address.apartment'     => str_repeat('0', 256),
+            'photos'                => $photos,
         ])
         ->assertHasTableActionErrors([
             'discount'              => 'max',
@@ -128,7 +148,40 @@ it('can validate edit stock item input', function () {
             'address.second_number' => 'max',
             'address.phone'         => 'max',
             'address.apartment'     => 'max',
+            'photos'                => 'max',
+        ])
+        ->callTableAction(CreateAction::class, record: $stockItem, data: [
+            'photos' => [
+                $bigPhoto,
+            ],
+        ])
+        ->assertHasTableActionErrors([
+            'photos' => 'max',
         ]);
 
     $this->assertAuthenticated();
+});
+
+it('validate photos file type', function () {
+    $product = Product::factory()
+        ->has(StockItem::factory()->count(10))
+        ->create();
+
+    $stockItem = $product->stockItems->first();
+    $video = UploadedFile::fake()->create('video.mp4');
+
+    $component = livewire(StockItemRelationManager::class, [
+        'ownerRecord' => $product,
+        'pageClass'   => EditProduct::class,
+    ])
+        ->callTableAction(CreateAction::class, record: $stockItem, data: [
+            'photos' => [
+                $video,
+            ],
+        ]);
+
+    $this->assertEquals(
+        'The fotos field must be a file of type: image/*.',
+        $component->errors()->getMessages()['mountedTableActionsData.0.photos'][0]
+    );
 });

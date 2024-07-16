@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Enums\StreetType;
 use App\Models\Address;
 use App\Models\City;
 use App\Models\State;
@@ -17,6 +18,7 @@ trait HasAddress
         return [
             Select::make('street_type')
                 ->label('Tipo de calle')
+                ->options(StreetType::class)
                 ->required(),
 
             TextInput::make('street_number')

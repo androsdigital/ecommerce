@@ -22,7 +22,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
-class OrderItemsRelationManager extends RelationManager
+class OrderItemRelationManager extends RelationManager
 {
     protected static ?string $title = 'Items del Pedido';
 

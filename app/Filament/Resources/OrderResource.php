@@ -5,7 +5,7 @@ namespace App\Filament\Resources;
 use App\Enums\OrderStatus;
 use App\Filament\Resources\OrderResource\Pages\EditOrder;
 use App\Filament\Resources\OrderResource\Pages\ListOrders;
-use App\Filament\Resources\OrderResource\RelationManagers\OrderItemsRelationManager;
+use App\Filament\Resources\OrderResource\RelationManagers\OrderItemRelationManager;
 use App\Filament\Resources\OrderResource\RelationManagers\PaymentsRelationManager;
 use App\Filament\Resources\OrderResource\Widgets\OrderStats;
 use App\Models\Order;
@@ -88,7 +88,7 @@ class OrderResource extends Resource
     public static function getRelations(): array
     {
         return [
-            OrderItemsRelationManager::class,
+            OrderItemRelationManager::class,
             //            PaymentsRelationManager::class,
         ];
     }

@@ -20,10 +20,10 @@ class StockItemFactory extends Factory
      */
     public function definition(): array
     {
-        $size = Size::inRandomOrder()->first() ?? Size::factory()->create();
-        $color = Color::inRandomOrder()->first() ?? Color::factory()->create();
-        $product = Product::inRandomOrder()->first() ?? Product::factory()->create();
-        $address = Address::inRandomOrder()->first() ?? Address::factory()->create();
+        $size = Size::count() >= 10 ? Size::inRandomOrder()->first() : Size::factory()->create();
+        $color = Color::count() >= 10 ? Color::inRandomOrder()->first() : Color::factory()->create();
+        $product = Product::count() >= 10 ? Product::inRandomOrder()->first() : Product::factory()->create();
+        $address = Address::count() >= 10 ? Address::inRandomOrder()->first() : Address::factory()->create();
 
         $priceBeforeDiscount = $this->faker->randomNumber(random_int(4, 5));
 
@@ -38,8 +38,9 @@ class StockItemFactory extends Factory
             'size_id'               => $size->id,
             'color_id'              => $color->id,
             'product_id'            => $product->id,
-            'sku'                   => $this->faker->unique()->numerify('SKU-######'),
+            'sku'                   => $this->faker->unique()->numerify('SKU-##########'),
             'quantity'              => $this->faker->numberBetween(100000, 1000000),
+            'price'                 => $priceBeforeDiscount - $discount,
             'discount'              => $discount,
             'price_before_discount' => $priceBeforeDiscount,
         ];

@@ -34,7 +34,7 @@ enum StreetType: string implements HasLabel
             self::Diagonal       => 'Diagonal',
             self::Manzana        => 'Manzana',
             self::Transversal    => 'Transversal',
-            self::Via            => 'Via',
+            self::Via            => 'Vía',
         };
     }
 }

@@ -5,12 +5,10 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ProductResource\Pages\CreateProduct;
 use App\Filament\Resources\ProductResource\Pages\EditProduct;
 use App\Filament\Resources\ProductResource\Pages\ListProducts;
+use App\Filament\Resources\ProductResource\RelationManagers\StockItemRelationManager;
 use App\Models\Product;
-use App\Models\StockItem;
-use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -63,43 +61,6 @@ class ProductResource extends Resource
                     ->required()
                     ->columnSpanFull(),
 
-                Repeater::make('stockItems')
-                    ->label('Inventario')
-                    ->addActionLabel('Agregar elemento')
-                    ->relationship()
-                    ->deleteAction(
-                        fn (Action $action) => $action->requiresConfirmation()->label('Esta acción eliminará el elemento del inventario.'),
-                    )
-                    ->defaultItems(0)
-                    ->schema([
-                        Select::make('size_id')
-                            ->label('Talla')
-                            ->relationship('size', 'name')
-                            ->required(),
-
-                        Select::make('color_id')
-                            ->label('Color')
-                            ->relationship('color', 'name')
-                            ->required(),
-
-                        TextInput::make('quantity')
-                            ->label('Cantidad')
-                            ->required()
-                            ->integer()
-                            ->minValue(0)
-                            ->maxValue(999999)
-                            ->numeric(),
-
-                        TextInput::make('sku')
-                            ->label('SKU')
-                            ->default(fn (Set $set) => 'SKU-' . random_int(100000, 999999))
-                            ->required()
-                            ->unique(StockItem::class, 'sku', ignoreRecord: true)
-                            ->disabled()
-                            ->dehydrated()
-                            ->maxLength(10),
-                    ]),
-
                 Repeater::make('features')
                     ->label('Características')
                     ->addActionLabel('Agregar característica')
@@ -119,7 +80,6 @@ class ProductResource extends Resource
                     ]),
 
                 Repeater::make('comments')
-                    ->label('Comentarios')
                     ->addActionLabel('Agregar comentario')
                     ->defaultItems(0)
                     ->schema([
@@ -129,17 +89,7 @@ class ProductResource extends Resource
                             ->maxLength(500)
                             ->required(),
                     ]),
-
-                SpatieMediaLibraryFileUpload::make('photos')
-                    ->label('Fotos')
-                    ->multiple()
-                    ->image()
-                    ->reorderable()
-                    ->maxFiles(10)
-                    ->maxSize(4000)
-                    ->columnSpanFull(),
-
-            ]);
+            ])->columns(3);
     }
 
     public static function table(Table $table): Table
@@ -154,12 +104,6 @@ class ProductResource extends Resource
                     ->label('Categoría')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('price')
-                    ->label('Precio')
-                    ->money(),
-                TextColumn::make('price_before_discount')
-                    ->label('Precio antes de descuento')
-                    ->money(),
                 TextColumn::make('created_at')
                     ->label('Creado en')
                     ->dateTime()
@@ -170,9 +114,6 @@ class ProductResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('quantity')
-                    ->label('Cantidad')
-                    ->getStateUsing(fn (Product $product) => $product->stockItems->sum('quantity')),
             ])
             ->actions([
                 EditAction::make(),
@@ -182,6 +123,13 @@ class ProductResource extends Resource
                     DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            StockItemRelationManager::class,
+        ];
     }
 
     public static function getPages(): array

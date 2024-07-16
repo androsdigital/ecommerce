@@ -2,34 +2,20 @@
 
 use App\Filament\Resources\ProductResource;
 use App\Filament\Resources\ProductResource\Pages\EditProduct;
-use App\Models\Category;
-use App\Models\Color;
 use App\Models\Product;
-use App\Models\Size;
-use App\Models\StockItem;
-use Illuminate\Http\UploadedFile;
 
 use function Pest\Livewire\livewire;
 
 it('can render edit page', function () {
-    $category = Category::factory()->create();
-
     $this->get(ProductResource::getUrl('edit', [
-        'record' => Product::factory()->for($category)->create(),
+        'record' => Product::factory()->create(),
     ]))->assertSuccessful();
 
     $this->assertAuthenticated();
 });
 
 it('can retrieve data', function () {
-    Size::factory()->create();
-    Color::factory()->create();
-    $category = Category::factory()->create();
-    $product = Product::factory()->for($category)->create();
-
-    for ($i = 0; $i < 2; $i++) {
-        $product->addMedia(UploadedFile::fake()->image('photo-' . $i . '.jpg'))->toMediaCollection();
-    }
+    $product = Product::factory()->create();
 
     livewire(EditProduct::class, [
         'record' => $product->getRouteKey(),
@@ -49,26 +35,14 @@ it('can retrieve data', function () {
             $product->features[1]['name'],
             $product->features[1]['value'],
             $product->comments[1]['comment'],
-            $product->getMedia()[0]['uuid'],
-            $product->getMedia()[1]['uuid'],
         ]);
 
     $this->assertAuthenticated();
 });
 
 it('can save a product', function () {
-    $category = Category::factory()->create();
-    $product = Product::factory()->for($category)->create();
-    Size::factory()->create();
-    Color::factory()->create();
-    $stockItem = StockItem::factory()->make();
-    $newData = Product::factory()->for($category)->make();
-
-    $photos = [];
-
-    for ($i = 0; $i < 3; $i++) {
-        $photos[] = UploadedFile::fake()->image('photo-' . $i . '.jpg');
-    }
+    $product = Product::factory()->create();
+    $newData = Product::factory()->make();
 
     livewire(EditProduct::class, [
         'record' => $product->getRouteKey(),
@@ -78,13 +52,11 @@ it('can save a product', function () {
         ->assertFormFieldExists('category_id')
         ->assertFormFieldExists('slug')
         ->assertFormFieldExists('description')
-        ->assertFormFieldExists('photos')
         ->fillForm([
             'category_id' => $newData->category_id,
             'name'        => $newData->name,
             'slug'        => $newData->slug,
             'description' => $newData->description,
-            'photos'      => $photos,
             'features'    => $newData->features,
             'comments'    => $newData->comments,
         ])
@@ -109,17 +81,7 @@ it('can save a product', function () {
 });
 
 it('can validate edit input', function () {
-    $category = Category::factory()->create();
-    $product = Product::factory()->for($category)->create();
-    Size::factory()->create();
-    Color::factory()->create();
-
-    $bigPhoto = UploadedFile::fake()->image('big-photo.jpg')->size(5000);
-    $photos = [];
-
-    for ($i = 0; $i < 12; $i++) {
-        $photos[] = UploadedFile::fake()->image('photo-' . $i . '.jpg');
-    }
+    $product = Product::factory()->create();
 
     livewire(EditProduct::class, [
         'record' => $product->getRouteKey(),
@@ -163,7 +125,6 @@ it('can validate edit input', function () {
                     'comment' => str_repeat('a', 501),
                 ],
             ],
-            'photos' => $photos,
         ])
         ->call('save')
         ->assertHasFormErrors([
@@ -201,37 +162,7 @@ it('can validate edit input', function () {
         ->call('save')
         ->assertHasFormErrors([
             'features.0.name' => 'alpha',
-        ])
-        ->fillForm([
-            'photos' => [
-                $bigPhoto,
-            ],
-        ])
-        ->call('save')
-        ->assertHasFormErrors([
-            'photos' => 'max',
         ]);
 
     $this->assertAuthenticated();
-});
-
-it('validate photos file type', function () {
-    $category = Category::factory()->create();
-    $product = Product::factory()->for($category)->create();
-
-    $product->clearMediaCollection();
-
-    $video = UploadedFile::fake()->create('video.mp4');
-    $component = livewire(EditProduct::class, [
-        'record' => $product->getRouteKey(),
-    ])->fillForm([
-        'photos' => [
-            $video,
-        ],
-    ])->call('save');
-
-    $this->assertEquals(
-        'The fotos field must be a file of type: image/*.',
-        $component->errors()->getMessages()['data.photos'][0]
-    );
 });

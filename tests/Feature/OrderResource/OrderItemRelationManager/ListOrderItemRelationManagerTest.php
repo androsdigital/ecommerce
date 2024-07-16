@@ -1,7 +1,7 @@
 <?php
 
 use App\Filament\Resources\OrderResource\Pages\EditOrder;
-use App\Filament\Resources\OrderResource\RelationManagers\OrderItemsRelationManager;
+use App\Filament\Resources\OrderResource\RelationManagers\OrderItemRelationManager;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Filament\Tables\Actions\DeleteAction;
@@ -14,7 +14,7 @@ it('can render order items relation manager', function () {
         ->has(OrderItem::factory()->count(10))
         ->create();
 
-    livewire(OrderItemsRelationManager::class, [
+    livewire(OrderItemRelationManager::class, [
         'ownerRecord' => $order,
         'pageClass'   => EditOrder::class,
     ])
@@ -28,7 +28,7 @@ it('can list order items in relation manager', function () {
         ->has(OrderItem::factory()->count(10))
         ->create();
 
-    livewire(OrderItemsRelationManager::class, [
+    livewire(OrderItemRelationManager::class, [
         'ownerRecord' => $order,
         'pageClass'   => EditOrder::class,
     ])
@@ -54,7 +54,7 @@ it('can set correct record values', function () {
     $orderItem = $order->orderItems->first();
     $stockItem = $orderItem->stockItem;
 
-    livewire(OrderItemsRelationManager::class, [
+    livewire(OrderItemRelationManager::class, [
         'ownerRecord' => $order,
         'pageClass'   => EditOrder::class,
     ])
@@ -84,7 +84,7 @@ it('can sort order items relation manager', function () {
 
     $orderItems = $order->orderItems;
 
-    livewire(OrderItemsRelationManager::class, [
+    livewire(OrderItemRelationManager::class, [
         'ownerRecord' => $order,
         'pageClass'   => EditOrder::class,
     ])
@@ -125,7 +125,7 @@ it('can delete orders', function () {
 
     $orderItem = $order->orderItems->first();
 
-    livewire(OrderItemsRelationManager::class, [
+    livewire(OrderItemRelationManager::class, [
         'ownerRecord' => $order,
         'pageClass'   => EditOrder::class,
     ])
@@ -140,7 +140,7 @@ it('can bulk delete orders', function () {
         ->create();
     $orderItems = $order->orderItems;
 
-    livewire(OrderItemsRelationManager::class, [
+    livewire(OrderItemRelationManager::class, [
         'ownerRecord' => $order,
         'pageClass'   => EditOrder::class,
     ])

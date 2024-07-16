@@ -2,16 +2,24 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\AddressResource\Pages;
-use App\Filament\Resources\AddressResource\RelationManagers;
+use App\Enums\StreetType;
+use App\Filament\Resources\AddressResource\Pages\CreateAddress;
+use App\Filament\Resources\AddressResource\Pages\EditAddress;
+use App\Filament\Resources\AddressResource\Pages\ListAddresses;
 use App\Models\Address;
-use Filament\Forms;
+use App\Models\City;
+use App\Models\State;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class AddressResource extends Resource
 {
@@ -19,34 +27,68 @@ class AddressResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $modelLabel = 'Dirección';
+
+    protected static ?string $pluralModelLabel = 'Direcciones';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('city_id')
-                    ->relationship('city', 'name')
+                Select::make('street_type')
+                    ->label('Tipo de calle')
+                    ->options(StreetType::class)
                     ->required(),
-                Forms\Components\TextInput::make('customer_id')
-                    ->numeric(),
-                Forms\Components\TextInput::make('street_type')
+
+                TextInput::make('street_number')
+                    ->label('Número de Calle')
+                    ->maxLength(31)
                     ->required(),
-                Forms\Components\TextInput::make('street_number')
+
+                TextInput::make('first_number')
+                    ->label('Número')
+                    ->maxLength(31)
+                    ->required(),
+
+                TextInput::make('second_number')
+                    ->maxLength(31)
+                    ->required(),
+
+                TextInput::make('apartment')
+                    ->maxLength(255)
+                    ->label('Apartamento/Edificio'),
+
+                TextInput::make('phone')
+                    ->label('Teléfono de contacto')
+                    ->maxLength(31)
+                    ->required(),
+
+                Select::make('state_id')
+                    ->label('Departamento')
+                    ->native(false)
+                    ->dehydrated(false)
+                    ->options(State::pluck('name', 'id'))
+                    ->afterStateUpdated(function (Set $set) {
+                        $set('city_id', '');
+                    }),
+
+                Select::make('city_id')
+                    ->searchable()
+                    ->label('Ciudad')
+                    ->native(false)
                     ->required()
-                    ->maxLength(31),
-                Forms\Components\TextInput::make('first_number')
-                    ->maxLength(31),
-                Forms\Components\TextInput::make('second_number')
-                    ->maxLength(31),
-                Forms\Components\TextInput::make('apartment')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('phone')
-                    ->tel()
-                    ->maxLength(31),
-                Forms\Components\Textarea::make('observation')
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('location'),
-                Forms\Components\TextInput::make('full_address')
-                    ->maxLength(255),
+                    ->options(function (?Address $record, Get $get, Set $set) {
+                        if (! is_null($record) && $get('state_id') === null) {
+                            $state = $record->city->state->id;
+
+                            $set('state_id', $state);
+                        }
+
+                        return City::where('state_id', $get('state_id'))->pluck('name', 'id');
+                    }),
+
+                TextInput::make('observation')
+                    ->label('Observación'),
             ]);
     }
 
@@ -54,31 +96,27 @@ class AddressResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('city.name')
-                    ->numeric()
+                TextColumn::make('city.state.name')
+                    ->label('Departamento')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('customer_id')
-                    ->numeric()
+                TextColumn::make('city.name')
+                    ->label('Ciudad')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('street_type'),
-                Tables\Columns\TextColumn::make('street_number')
+                TextColumn::make('full_address')
+                    ->label('Direccion')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('first_number')
+                TextColumn::make('phone')
+                    ->label('Teléfono de contacto')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('second_number')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('apartment')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('phone')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('location'),
-                Tables\Columns\TextColumn::make('full_address')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('location')
+                    ->label('Locación'),
+                TextColumn::make('created_at')
+                    ->label('Creada el')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
+                    ->label('Modificada el')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -87,11 +125,11 @@ class AddressResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -106,9 +144,9 @@ class AddressResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListAddresses::route('/'),
-            'create' => Pages\CreateAddress::route('/create'),
-            'edit' => Pages\EditAddress::route('/{record}/edit'),
+            'index'  => ListAddresses::route('/'),
+            'create' => CreateAddress::route('/create'),
+            'edit'   => EditAddress::route('/{record}/edit'),
         ];
     }
 }

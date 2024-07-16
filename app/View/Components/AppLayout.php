@@ -8,9 +8,7 @@ use Illuminate\View\Component;
 
 class AppLayout extends Component
 {
-    public function __construct(public GeneralSettings $settings)
-    {
-    }
+    public function __construct(public GeneralSettings $settings) {}
 
     public function render(): View
     {

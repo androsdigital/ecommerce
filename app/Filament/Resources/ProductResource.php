@@ -80,7 +80,6 @@ class ProductResource extends Resource
                     ]),
 
                 Repeater::make('comments')
-                    ->label(false)
                     ->addActionLabel('Agregar comentario')
                     ->defaultItems(0)
                     ->schema([

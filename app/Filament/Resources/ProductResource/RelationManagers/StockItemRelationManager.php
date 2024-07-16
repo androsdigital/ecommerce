@@ -179,7 +179,7 @@ class StockItemRelationManager extends RelationManager
                 ->default(0)
                 ->numeric()
                 ->required()
-                ->maxValue(function (Get $get): ?int {
+                ->maxValue(function (Get $get): int {
                     return (int) $get('price_before_discount');
                 })
                 ->minValue(0)

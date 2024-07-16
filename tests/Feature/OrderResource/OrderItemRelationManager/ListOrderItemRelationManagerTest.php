@@ -65,16 +65,8 @@ it('can set correct record values', function () {
         ->assertTableColumnStateSet('stockItem.price_before_discount', $stockItem->price_before_discount, record: $orderItem)
         ->assertTableColumnStateSet('stockItem.discount', $stockItem->discount, record: $orderItem)
         ->assertTableColumnStateSet('shipping_price', $orderItem->shipping_price, record: $orderItem)
-        ->assertTableColumnStateSet(
-            'unit_price',
-            $stockItem->price_before_discount - $stockItem->discount,
-            record: $orderItem
-        )
-        ->assertTableColumnStateSet(
-            'price',
-            ($stockItem->price_before_discount - $stockItem->discount + $orderItem->shipping_price) * $orderItem->quantity,
-            record: $orderItem
-        );
+        ->assertTableColumnStateSet('unit_price', $orderItem->unit_price, record: $orderItem)
+        ->assertTableColumnStateSet('price', $orderItem->price, record: $orderItem);
 });
 
 it('can sort order items relation manager', function () {

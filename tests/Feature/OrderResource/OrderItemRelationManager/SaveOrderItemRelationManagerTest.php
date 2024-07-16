@@ -43,6 +43,8 @@ it('can edit order item', function () {
             'size_id'        => $newData->stockItem->size_id,
             'color_id'       => $newData->stockItem->color_id,
             'shipping_price' => $newData->shipping_price,
+            'price'          => $newData->price,
+            'unit_price'     => $newData->unit_price,
         ])
         ->assertHasNoTableActionErrors();
 
@@ -51,6 +53,8 @@ it('can edit order item', function () {
         'stock_item_id'  => $newData->stock_item_id,
         'quantity'       => $newData->quantity,
         'shipping_price' => $newData->shipping_price,
+        'price'          => ($newData->unit_price * $newData->quantity) + $newData->shipping_price,
+        'unit_price'     => $newData->unit_price,
     ]);
 
     $this->assertAuthenticated();
@@ -75,6 +79,8 @@ it('can load order item data', function () {
             'stock_item_id'  => $orderItem->stock_item_id,
             'quantity'       => $orderItem->quantity,
             'shipping_price' => $orderItem->shipping_price,
+            'price'          => $orderItem->price,
+            'unit_price'     => $orderItem->unit_price,
         ]);
 
     $this->assertAuthenticated();
@@ -96,6 +102,8 @@ it('can validate edit order item input', function () {
             'size_id'        => null,
             'quantity'       => null,
             'shipping_price' => null,
+            'price'          => null,
+            'unit_price'     => null,
         ])
         ->assertHasTableActionErrors([
             'product_id'     => ['required'],
@@ -103,6 +111,8 @@ it('can validate edit order item input', function () {
             'color_id'       => 'required',
             'quantity'       => 'required',
             'shipping_price' => 'required',
+            'price'          => 'required',
+            'unit_price'     => 'required',
         ])
         ->callTableAction(EditAction::class, record: $orderItem, data: [
             'shipping_price' => -1,

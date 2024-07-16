@@ -73,25 +73,19 @@ class OrderItemRelationManager extends RelationManager
                     ->label('Precio Unitario')
                     ->numeric(locale: 'es')
                     ->sortable()
-                    ->state(function (OrderItem $record): int {
-                        return $record->stockItem->price_before_discount
-                            - $record->stockItem->discount;
-                    })
                     ->toggleable(),
 
                 TextColumn::make('price')
                     ->label('Total con envío')
                     ->numeric(locale: 'es')
                     ->sortable()
-                    ->state(function (OrderItem $record): int {
-                        $record->refresh();
-
-                        return ($record->stockItem->price_before_discount
-                            - $record->stockItem->discount
-                            + $record->shipping_price)
-                            * $record->quantity;
-                    })
                     ->toggleable(),
+
+                TextColumn::make('shipping_price')
+                    ->label('Costo de envío')
+                    ->numeric(locale: 'es')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
 
                 TextColumn::make('stockItem.price_before_discount')
                     ->label('Precio antes del descuento')
@@ -104,13 +98,6 @@ class OrderItemRelationManager extends RelationManager
                     ->numeric(locale: 'es')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
-
-                TextColumn::make('shipping_price')
-                    ->label('Costo de envío')
-                    ->numeric(locale: 'es')
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->sortable(),
-
             ])
             ->headerActions([
                 CreateAction::make(),
@@ -192,14 +179,10 @@ class OrderItemRelationManager extends RelationManager
                         ->where('color_id', $get('color_id'))
                         ->first();
 
-                    $set('unit_price', function () use ($stockItem): int {
-                        return $stockItem->price_before_discount - $stockItem->discount;
-                    });
+                    $set('unit_price', $stockItem->price);
 
                     $set('price', function (Get $get): int {
-                        return
-                            ((int) $get('unit_price') + (int) $get('shipping_price'))
-                            * (int) $get('quantity');
+                        return ((int) $get('unit_price') * (int) $get('quantity')) + (int) $get('shipping_price');
                     });
 
                     $set('stock_item_id', $stockItem->id);
@@ -224,7 +207,7 @@ class OrderItemRelationManager extends RelationManager
                 ->minValue(0)
                 ->afterStateUpdated(function (Set $set) {
                     $set('price', function (Get $get): int {
-                        return ((int) $get('unit_price') + (int) $get('shipping_price')) * (int) $get('quantity');
+                        return ((int) $get('unit_price') * (int) $get('quantity')) + (int) $get('shipping_price');
                     });
                 }),
 
@@ -237,7 +220,7 @@ class OrderItemRelationManager extends RelationManager
                 ->required()
                 ->afterStateUpdated(function (Set $set) {
                     $set('price', function (Get $get): int {
-                        return ((int) $get('unit_price') + (int) $get('shipping_price')) * (int) $get('quantity');
+                        return ((int) $get('unit_price') * (int) $get('quantity')) + (int) $get('shipping_price');
                     });
                 }),
 
@@ -245,22 +228,24 @@ class OrderItemRelationManager extends RelationManager
                 ->label('Precio unitario')
                 ->numeric()
                 ->disabled()
-                ->dehydrated(false)
+                ->required()
+                ->dehydrated()
                 ->formatStateUsing(function (?OrderItem $record): int {
                     if (is_null($record)) {
                         return 0;
                     }
 
-                    return $record->stockItem->price_before_discount - $record->stockItem->discount;
+                    return $record->stockItem->price;
                 }),
 
             TextInput::make('price')
                 ->label('Total con envío')
                 ->numeric()
+                ->required()
                 ->disabled()
-                ->dehydrated(false)
+                ->dehydrated()
                 ->formatStateUsing(function (Get $get): int {
-                    return ((int) $get('unit_price') + (int) $get('shipping_price')) * (int) $get('quantity');
+                    return ((int) $get('unit_price') * (int) $get('quantity')) + (int) $get('shipping_price');
                 }),
         ];
     }

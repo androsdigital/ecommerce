@@ -16,12 +16,16 @@ class OrderItemFactory extends Factory
     {
         $stockItem = StockItem::inRandomOrder()->first() ?? StockItem::factory()->create();
         $order = Order::inRandomOrder()->first() ?? Order::factory()->create();
+        $shippingPrice = $this->faker->randomNumber(3);
+        $quantity = $this->faker->numberBetween(1, 10);
 
         return [
             'stock_item_id'  => $stockItem->id,
             'order_id'       => $order->id,
-            'shipping_price' => $this->faker->randomNumber(2),
-            'quantity'       => $this->faker->numberBetween(1, 10),
+            'shipping_price' => $shippingPrice,
+            'price'          => ($stockItem->price * $quantity) + $shippingPrice,
+            'unit_price'     => $stockItem->price,
+            'quantity'       => $quantity,
         ];
     }
 }

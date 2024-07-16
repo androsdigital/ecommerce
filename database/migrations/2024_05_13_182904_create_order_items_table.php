@@ -15,6 +15,8 @@ return new class() extends Migration
             $table->foreignId('stock_item_id')->constrained('stock_items');
 
             $table->unsignedBigInteger('shipping_price');
+            $table->unsignedBigInteger('price');
+            $table->unsignedBigInteger('unit_price');
             $table->unsignedInteger('quantity');
 
             $table->timestamps();

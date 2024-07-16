@@ -40,6 +40,8 @@ it('can create order item', function () {
             'size_id'        => $newData->stockItem->size_id,
             'color_id'       => $newData->stockItem->color_id,
             'shipping_price' => $newData->shipping_price,
+            'price'          => $newData->price,
+            'unit_price'     => $newData->unit_price,
             'quantity'       => $newData->quantity,
         ])
         ->assertHasNoTableActionErrors();
@@ -49,6 +51,8 @@ it('can create order item', function () {
         'stock_item_id'  => $newData->stock_item_id,
         'quantity'       => $newData->quantity,
         'shipping_price' => $newData->shipping_price,
+        'price'          => ($newData->unit_price * $newData->quantity) + $newData->shipping_price,
+        'unit_price'     => $newData->unit_price,
     ]);
 
     $this->assertAuthenticated();
@@ -68,6 +72,8 @@ it('can validate create order item input', function () {
             'size_id'        => null,
             'quantity'       => null,
             'shipping_price' => null,
+            'price'          => null,
+            'unit_price'     => null,
         ])
         ->assertHasTableActionErrors([
             'product_id'     => 'required',
@@ -75,6 +81,8 @@ it('can validate create order item input', function () {
             'color_id'       => 'required',
             'quantity'       => 'required',
             'shipping_price' => 'required',
+            'price'          => 'required',
+            'unit_price'     => 'required',
         ])
         ->callTableAction(CreateAction::class, data: [
             'shipping_price' => -1,

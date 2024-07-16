@@ -8,8 +8,6 @@ use Illuminate\Database\Seeder;
 
 class SizeSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     public function run(): void
     {
         $sizes = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'unisize', 'no-size'];

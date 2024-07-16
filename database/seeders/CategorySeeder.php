@@ -9,8 +9,6 @@ use Illuminate\Support\Str;
 
 class CategorySeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     public function run(): void
     {
         $categories = ['Shoes', 'Toys', 'Electronics', 'Garden', 'Outdoor'];

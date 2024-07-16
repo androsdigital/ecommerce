@@ -8,8 +8,6 @@ use Illuminate\Database\Seeder;
 
 class ProductSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     public function run(): void
     {
         Product::factory(100)->create();

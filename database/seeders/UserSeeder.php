@@ -8,8 +8,6 @@ use Illuminate\Database\Seeder;
 
 class UserSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     public function run(): void
     {
         User::factory()->create(['email' => 'admin@admin.com']);

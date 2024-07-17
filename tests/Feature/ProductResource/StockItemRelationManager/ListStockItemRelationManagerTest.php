@@ -38,6 +38,7 @@ it('can list stock items', function () {
         ->assertCanRenderTableColumn('color.name')
         ->assertCanRenderTableColumn('quantity')
         ->assertCanRenderTableColumn('price')
+        ->assertCanNotRenderTableColumn('address.full_address')
         ->assertCanNotRenderTableColumn('price_before_discount')
         ->assertCanNotRenderTableColumn('discount');
 
@@ -57,6 +58,7 @@ it('can set correct record values', function () {
     ])
         ->assertTableColumnStateSet('size.name', $stockItem->size->name, record: $stockItem)
         ->assertTableColumnStateSet('color.name', $stockItem->color->name, record: $stockItem)
+        ->assertTableColumnStateSet('address.full_address', $stockItem->address->full_address, record: $stockItem)
         ->assertTableColumnStateSet('quantity', $stockItem->quantity, record: $stockItem)
         ->assertTableColumnStateSet('price_before_discount', $stockItem->price_before_discount, record: $stockItem)
         ->assertTableColumnStateSet('discount', $stockItem->discount, record: $stockItem)

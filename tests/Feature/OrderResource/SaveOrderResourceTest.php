@@ -32,29 +32,13 @@ it('can save a order', function () {
         ->assertFormFieldIsDisabled('number')
         ->assertFormFieldExists('status')
         ->assertFormFieldExists('notes')
-        ->assertFormFieldExists('address.street_type')
-        ->assertFormFieldExists('address.street_number')
-        ->assertFormFieldExists('address.first_number')
-        ->assertFormFieldExists('address.second_number')
-        ->assertFormFieldExists('address.apartment')
-        ->assertFormFieldExists('address.phone')
-        ->assertFormFieldExists('address.state_id')
-        ->assertFormFieldExists('address.city_id')
-        ->assertFormFieldExists('address.observation')
+        ->assertFormFieldExists('address_id')
         ->fillForm([
-            'customer_id'           => $newData->customer_id,
-            'number'                => $newData->number,
-            'status'                => $newData->status,
-            'notes'                 => $newData->notes,
-            'address.street_type'   => $newData->address->street_type,
-            'address.street_number' => $newData->address->street_number,
-            'address.first_number'  => $newData->address->first_number,
-            'address.second_number' => $newData->address->second_number,
-            'address.apartment'     => $newData->address->apartment_number,
-            'address.phone'         => $newData->address->phone,
-            'address.state_id'      => $newData->address->state_id,
-            'address.city_id'       => $newData->address->city_id,
-            'address.observation'   => $newData->address->observation,
+            'customer_id' => $newData->customer_id,
+            'number'      => $newData->number,
+            'status'      => $newData->status,
+            'notes'       => $newData->notes,
+            'address_id'  => $newData->address_id,
         ])
         ->call('save')
         ->assertHasNoFormErrors();
@@ -64,7 +48,7 @@ it('can save a order', function () {
         'number'      => $newData->number,
         'status'      => $newData->status,
         'notes'       => $newData->notes,
-        'address_id'  => $newData->address->id,
+        'address_id'  => $newData->address_id,
     ]);
 
     $this->assertAuthenticated();
@@ -77,42 +61,22 @@ it('can validate save input', function () {
         'record' => $order->getRouteKey(),
     ])
         ->fillForm([
-            'number'                => null,
-            'status'                => null,
-            'address.street_type'   => null,
-            'address.street_number' => null,
-            'address.first_number'  => null,
-            'address.second_number' => null,
-            'address.phone'         => null,
-            'address.city_id'       => null,
+            'number'     => null,
+            'status'     => null,
+            'address_id' => null,
         ])
         ->call('save')
         ->assertHasFormErrors([
-            'number'                => 'required',
-            'status'                => 'required',
-            'address.street_type'   => 'required',
-            'address.street_number' => 'required',
-            'address.first_number'  => 'required',
-            'address.second_number' => 'required',
-            'address.phone'         => 'required',
-            'address.city_id'       => 'required',
+            'number'     => 'required',
+            'status'     => 'required',
+            'address_id' => 'required',
         ])
         ->fillForm([
-            'number'                => str_repeat('0', 32),
-            'address.street_number' => str_repeat('0', 32),
-            'address.first_number'  => str_repeat('0', 32),
-            'address.second_number' => str_repeat('0', 32),
-            'address.phone'         => str_repeat('0', 32),
-            'address.apartment'     => str_repeat('0', 256),
+            'number' => str_repeat('0', 32),
         ])
         ->call('save')
         ->assertHasFormErrors([
-            'number'                => 'max',
-            'address.street_number' => 'max',
-            'address.first_number'  => 'max',
-            'address.second_number' => 'max',
-            'address.phone'         => 'max',
-            'address.apartment'     => 'max',
+            'number' => 'max',
         ]);
 
     $this->assertAuthenticated();

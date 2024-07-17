@@ -164,11 +164,7 @@ class OrderResource extends Resource
                 ->columnSpanFull()
                 ->required(),
 
-            Section::make()
-                ->heading('Dirección')
-                ->collapsed()
-                ->relationship('address')
-                ->schema(static::getAddressFormSchema()),
+            self::getAddressFormComponent(),
 
             MarkdownEditor::make('notes')
                 ->label('Observaciones')

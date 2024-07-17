@@ -2,11 +2,10 @@
 
 namespace App\Filament\Resources\ProductResource\RelationManagers;
 
-use App\Models\Address;
 use App\Models\Color;
 use App\Models\Size;
 use App\Models\StockItem;
-use Filament\Forms\Components\Actions\Action;
+use App\Traits\HasAddress;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
@@ -24,6 +23,8 @@ use Filament\Tables\Table;
 
 class StockItemRelationManager extends RelationManager
 {
+    use HasAddress;
+
     protected static ?string $title = 'Stock Items';
 
     protected static ?string $modelLabel = 'item';
@@ -137,35 +138,7 @@ class StockItemRelationManager extends RelationManager
                 ->unique(StockItem::class, 'sku', ignoreRecord: true)
                 ->maxLength(14),
 
-            Select::make('address_id')
-                ->label('Dirección')
-                ->live()
-                ->required()
-                ->searchable()
-                ->relationship('address', 'full_address')
-                ->columnSpanFull()
-                ->suffixActions([
-                    Action::make('editAddress')
-                        ->label('Editar')
-                        ->link()
-                        ->icon('heroicon-m-pencil-square')
-                        ->url(function (?int $state) {
-                            if (is_null($state)) {
-                                return route('filament.admin.resources.addresses.create');
-                            }
-
-                            return route('filament.admin.resources.addresses.edit', ['record' => Address::find($state)]);
-                        }),
-
-                    Action::make('createAddress')
-                        ->label('Nueva')
-                        ->color('success')
-                        ->link()
-                        ->icon('heroicon-m-pencil-square')
-                        ->url(function () {
-                            return route('filament.admin.resources.addresses.create');
-                        }),
-                ]),
+            self::getAddressFormComponent(),
         ];
     }
 

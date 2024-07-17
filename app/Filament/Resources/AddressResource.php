@@ -9,6 +9,7 @@ use App\Filament\Resources\AddressResource\Pages\ListAddresses;
 use App\Models\Address;
 use App\Models\City;
 use App\Models\State;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -19,7 +20,10 @@ use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 
 class AddressResource extends Resource
 {
@@ -104,9 +108,11 @@ class AddressResource extends Resource
                     ->sortable(),
                 TextColumn::make('full_address')
                     ->label('Direccion')
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('phone')
                     ->label('Teléfono de contacto')
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('location')
                     ->label('Locación'),
@@ -121,9 +127,7 @@ class AddressResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filters([
-                //
-            ])
+            ->filters(self::getTableFilters())
             ->actions([
                 EditAction::make(),
             ])
@@ -134,19 +138,53 @@ class AddressResource extends Resource
             ]);
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
     public static function getPages(): array
     {
         return [
             'index'  => ListAddresses::route('/'),
             'create' => CreateAddress::route('/create'),
             'edit'   => EditAddress::route('/{record}/edit'),
+        ];
+    }
+
+    public static function getTableFilters(): array
+    {
+        return [
+            Filter::make('created_at')
+                ->form([
+                    DatePicker::make('created_from')
+                        ->label('Direcciones creadas desde')
+                        ->native(false)
+                        ->placeholder(fn ($state): string => now()->format('d/m/Y'))
+                        ->displayFormat('d/m/Y'),
+                    DatePicker::make('created_until')
+                        ->label('Direcciones creadas hasta')
+                        ->native(false)
+                        ->placeholder(fn ($state): string => now()->format('d/m/Y'))
+                        ->displayFormat('d/m/Y'),
+                ])
+                ->query(function (Builder $query, array $data): Builder {
+                    return $query
+                        ->when(
+                            $data['created_from'] ?? null,
+                            fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                        )
+                        ->when(
+                            $data['created_until'] ?? null,
+                            fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                        );
+                })
+                ->indicateUsing(function (array $data): array {
+                    $indicators = [];
+                    if ($data['created_from'] ?? null) {
+                        $indicators['created_from'] = 'Direcciones desde ' . Carbon::parse($data['created_from'])->toFormattedDateString();
+                    }
+                    if ($data['created_until'] ?? null) {
+                        $indicators['created_until'] = 'Direcciones hasta ' . Carbon::parse($data['created_until'])->toFormattedDateString();
+                    }
+
+                    return $indicators;
+                }),
         ];
     }
 }

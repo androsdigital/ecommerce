@@ -20,7 +20,7 @@ class Address extends Model
         'street_number',
         'first_number',
         'second_number',
-        'apartment_number',
+        'apartment',
         'phone',
         'observation',
         'location',
@@ -41,5 +41,10 @@ class Address extends Model
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function stockItems(): HasMany
+    {
+        return $this->hasMany(StockItem::class);
     }
 }

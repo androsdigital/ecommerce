@@ -20,7 +20,8 @@ return new class extends Migration
             $table->string('street_number', 31);
             $table->string('first_number', 31)->nullable();
             $table->string('second_number', 31)->nullable();
-            $table->string('apartment', 255)->nullable();
+            $table->string('apartment', 31)->nullable();
+            $table->string('building', 255)->nullable();
             $table->string('phone', 31)->nullable();
             $table->text('observation')->nullable();
             $table->geometry('location')->nullable();

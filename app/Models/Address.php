@@ -21,6 +21,7 @@ class Address extends Model
         'first_number',
         'second_number',
         'apartment',
+        'building',
         'phone',
         'full_address',
         'observation',

@@ -33,6 +33,7 @@ it('can save an address', function () {
         ->assertFormFieldExists('first_number')
         ->assertFormFieldExists('second_number')
         ->assertFormFieldExists('apartment')
+        ->assertFormFieldExists('building')
         ->assertFormFieldExists('phone')
         ->assertFormFieldExists('full_address')
         ->assertFormFieldExists('observation')
@@ -44,6 +45,7 @@ it('can save an address', function () {
             'first_number'  => $newData->first_number,
             'second_number' => $newData->second_number,
             'apartment'     => $newData->apartment,
+            'building'      => $newData->building,
             'phone'         => $newData->phone,
             'full_address'  => $newData->full_address,
             'observation'   => $newData->observation,
@@ -58,6 +60,7 @@ it('can save an address', function () {
         'first_number'  => $newData->first_number,
         'second_number' => $newData->second_number,
         'apartment'     => $newData->apartment,
+        'building'      => $newData->building,
         'full_address'  => $newData->full_address,
         'phone'         => $newData->phone,
         'observation'   => $newData->observation,
@@ -96,7 +99,8 @@ it('can validate save input', function () {
             'first_number'  => str_repeat('0', 32),
             'second_number' => str_repeat('0', 32),
             'phone'         => str_repeat('0', 32),
-            'apartment'     => str_repeat('0', 256),
+            'apartment'     => str_repeat('0', 32),
+            'building'      => str_repeat('0', 256),
             'full_address'  => str_repeat('0', 256),
         ])
         ->call('save')
@@ -106,6 +110,7 @@ it('can validate save input', function () {
             'second_number' => 'max',
             'phone'         => 'max',
             'apartment'     => 'max',
+            'building'      => 'max',
             'full_address'  => 'max',
         ]);
 

@@ -117,10 +117,14 @@ class AddressResource extends Resource
                     ->live(),
 
                 TextInput::make('apartment')
-                    ->maxLength(255)
-                    ->label('Apartamento/Edificio')
+                    ->maxLength(31)
+                    ->label('Apartamento')
                     ->afterStateUpdated($fullAddressCallback)
                     ->live(),
+
+                TextInput::make('building')
+                    ->maxLength(255)
+                    ->label('Unidad/Conjunto/Edificio'),
 
                 TextInput::make('phone')
                     ->label('Teléfono de contacto')
@@ -144,6 +148,10 @@ class AddressResource extends Resource
                     ->sortable(),
                 TextColumn::make('full_address')
                     ->label('Direccion')
+                    ->searchable(),
+                TextColumn::make('building')
+                    ->label('Unidad/Conjunto/Edificio')
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('phone')
                     ->label('Teléfono de contacto')

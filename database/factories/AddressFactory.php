@@ -29,6 +29,7 @@ class AddressFactory extends Factory
             'first_number'  => $firstNumber,
             'second_number' => $secondNumber,
             'apartment'     => $apartment,
+            'building'      => fake()->sentence(3),
             'phone'         => fake()->unique()->phoneNumber(),
             'observation'   => fake()->paragraph(),
             'full_address'  => $city->name

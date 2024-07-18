@@ -45,15 +45,7 @@ it('can create stock item', function () {
             'color_id'              => $newData->color_id,
             'price_before_discount' => $newData->price_before_discount,
             'discount'              => $newData->discount,
-            'address.street_type'   => $newData->address->street_type,
-            'address.street_number' => $newData->address->street_number,
-            'address.first_number'  => $newData->address->first_number,
-            'address.second_number' => $newData->address->second_number,
-            'address.apartment'     => $newData->address->apartment_number,
-            'address.phone'         => $newData->address->phone,
-            'address.state_id'      => $newData->address->state_id,
-            'address.city_id'       => $newData->address->city_id,
-            'address.observation'   => $newData->address->observation,
+            'address_id'            => $newData->address_id,
             'photos'                => $photos,
         ])
         ->assertHasNoTableActionErrors();
@@ -63,6 +55,7 @@ it('can create stock item', function () {
         'quantity'              => $newData->quantity,
         'size_id'               => $newData->size_id,
         'color_id'              => $newData->color_id,
+        'address_id'            => $newData->address_id,
         'price'                 => $newData->price,
         'price_before_discount' => $newData->price_before_discount,
         'discount'              => $newData->discount,
@@ -101,12 +94,7 @@ it('can validate edit stock item input', function () {
             'quantity'              => null,
             'price_before_discount' => null,
             'discount'              => null,
-            'address.street_type'   => null,
-            'address.street_number' => null,
-            'address.first_number'  => null,
-            'address.second_number' => null,
-            'address.phone'         => null,
-            'address.city_id'       => null,
+            'address_id'            => null,
         ])
         ->assertHasTableActionErrors([
             'size_id'               => 'required',
@@ -114,12 +102,7 @@ it('can validate edit stock item input', function () {
             'quantity'              => 'required',
             'price_before_discount' => 'required',
             'discount'              => 'required',
-            'address.street_type'   => 'required',
-            'address.street_number' => 'required',
-            'address.first_number'  => 'required',
-            'address.second_number' => 'required',
-            'address.phone'         => 'required',
-            'address.city_id'       => 'required',
+            'address_id'            => 'required',
         ])
         ->callTableAction(CreateAction::class, record: $stockItem, data: [
             'quantity'              => -1,
@@ -134,21 +117,11 @@ it('can validate edit stock item input', function () {
         ->callTableAction(CreateAction::class, record: $stockItem, data: [
             'price_before_discount' => 1000,
             'discount'              => 2000,
-            'address.street_number' => str_repeat('0', 32),
-            'address.first_number'  => str_repeat('0', 32),
-            'address.second_number' => str_repeat('0', 32),
-            'address.phone'         => str_repeat('0', 32),
-            'address.apartment'     => str_repeat('0', 256),
             'photos'                => $photos,
         ])
         ->assertHasTableActionErrors([
-            'discount'              => 'max',
-            'address.street_number' => 'max',
-            'address.first_number'  => 'max',
-            'address.second_number' => 'max',
-            'address.phone'         => 'max',
-            'address.apartment'     => 'max',
-            'photos'                => 'max',
+            'discount' => 'max',
+            'photos'   => 'max',
         ])
         ->callTableAction(CreateAction::class, record: $stockItem, data: [
             'photos' => [

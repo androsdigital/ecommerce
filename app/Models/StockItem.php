@@ -20,6 +20,7 @@ class StockItem extends Model implements HasMedia
         'product_id',
         'size_id',
         'color_id',
+        'address_id',
         'quantity',
         'price',
         'price_before_discount',

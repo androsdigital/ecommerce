@@ -51,7 +51,6 @@ class StockItemRelationManager extends RelationManager
                     ->maxFiles(10)
                     ->maxSize(4000)
                     ->columnSpanFull(),
-
             ]);
     }
 
@@ -85,6 +84,10 @@ class StockItemRelationManager extends RelationManager
                     ->numeric(locale: 'es')
                     ->sortable()
                     ->toggleable(),
+
+                TextColumn::make('address.full_address')
+                    ->label('Direccion')
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('price_before_discount')
                     ->label('Precio antes del descuento')
@@ -135,11 +138,7 @@ class StockItemRelationManager extends RelationManager
                 ->unique(StockItem::class, 'sku', ignoreRecord: true)
                 ->maxLength(14),
 
-            Section::make()
-                ->heading('Dirección')
-                ->collapsed()
-                ->relationship('address')
-                ->schema(static::getAddressFormSchema()),
+            self::getAddressFormComponent(),
         ];
     }
 

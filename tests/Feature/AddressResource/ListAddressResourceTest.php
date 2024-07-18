@@ -55,7 +55,6 @@ it('can search addresses', function () {
         ->searchTable($address->full_address)
         ->assertCanSeeTableRecords($addresses->where('full_address', $address->full_address))
         ->assertCountTableRecords($addresses->where('full_address', $address->full_address)->count())
-        ->assertCanSeeTableRecords($addresses)
         ->searchTable($address->phone)
         ->assertCanSeeTableRecords($addresses->where('phone', $address->phone))
         ->assertCountTableRecords($addresses->where('phone', $address->phone)->count());

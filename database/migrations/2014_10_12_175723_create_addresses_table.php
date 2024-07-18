@@ -25,11 +25,7 @@ return new class extends Migration
             $table->text('observation')->nullable();
             $table->geometry('location')->nullable();
 
-            $table->string('full_address')->virtualAs(
-                config('database.default') === 'sqlite'
-                    ? "street_type || ' ' || street_number || ' # ' || first_number || ' - ' || second_number"
-                    : "CONCAT(street_type, ' ', street_number, ' # ', first_number, ' - ', second_number)"
-            );
+            $table->string('full_address', 255);
 
             $table->timestamps();
         });

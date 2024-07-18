@@ -37,39 +37,35 @@ class AddressResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $fullAddressCallback = function (Get $get, Set $set): void {
+            $apartment = $get('apartment') === '' ? '' : ' Apto ' . $get('apartment');
+            $streetType = is_null($get('street_type')) || $get('street_type') === ''
+                ? ''
+                : StreetType::from($get('street_type'))->getLabel();
+
+            $set('full_address',
+                City::find($get('city_id'))?->name
+                . ' - ' . State::find($get('state_id'))?->name
+                . ', ' . $streetType
+                . ' ' . $get('street_number')
+                . ' # ' . $get('first_number')
+                . ' - ' . $get('second_number')
+                . $apartment);
+        };
+
         return $form
             ->schema([
-                Select::make('street_type')
-                    ->label('Tipo de calle')
-                    ->options(StreetType::class)
-                    ->required(),
-
-                TextInput::make('street_number')
-                    ->label('Número de Calle')
-                    ->maxLength(31)
-                    ->required(),
-
-                TextInput::make('first_number')
-                    ->label('Número')
-                    ->maxLength(31)
-                    ->required(),
-
-                TextInput::make('second_number')
-                    ->maxLength(31)
-                    ->required(),
-
-                TextInput::make('apartment')
+                TextInput::make('full_address')
+                    ->label('Dirección Completa')
                     ->maxLength(255)
-                    ->label('Apartamento/Edificio'),
-
-                TextInput::make('phone')
-                    ->label('Teléfono de contacto')
-                    ->maxLength(31)
-                    ->required(),
+                    ->required()
+                    ->disabled()
+                    ->dehydrated(),
 
                 Select::make('state_id')
                     ->label('Departamento')
                     ->native(false)
+                    ->required()
                     ->dehydrated(false)
                     ->options(State::pluck('name', 'id'))
                     ->afterStateUpdated(function (Set $set) {
@@ -89,7 +85,47 @@ class AddressResource extends Resource
                         }
 
                         return City::where('state_id', $get('state_id'))->pluck('name', 'id');
-                    }),
+                    })
+                    ->afterStateUpdated($fullAddressCallback)
+                    ->live(),
+
+                Select::make('street_type')
+                    ->label('Tipo de calle')
+                    ->live()
+                    ->options(StreetType::class)
+                    ->required()
+                    ->afterStateUpdated($fullAddressCallback),
+
+                TextInput::make('street_number')
+                    ->label('Número de Calle')
+                    ->maxLength(31)
+                    ->required()
+                    ->afterStateUpdated($fullAddressCallback)
+                    ->live(),
+
+                TextInput::make('first_number')
+                    ->label('Número')
+                    ->maxLength(31)
+                    ->required()
+                    ->afterStateUpdated($fullAddressCallback)
+                    ->live(),
+
+                TextInput::make('second_number')
+                    ->maxLength(31)
+                    ->required()
+                    ->afterStateUpdated($fullAddressCallback)
+                    ->live(),
+
+                TextInput::make('apartment')
+                    ->maxLength(255)
+                    ->label('Apartamento/Edificio')
+                    ->afterStateUpdated($fullAddressCallback)
+                    ->live(),
+
+                TextInput::make('phone')
+                    ->label('Teléfono de contacto')
+                    ->maxLength(31)
+                    ->required(),
 
                 TextInput::make('observation')
                     ->label('Observación'),
@@ -108,7 +144,6 @@ class AddressResource extends Resource
                     ->sortable(),
                 TextColumn::make('full_address')
                     ->label('Direccion')
-                    ->sortable()
                     ->searchable(),
                 TextColumn::make('phone')
                     ->label('Teléfono de contacto')

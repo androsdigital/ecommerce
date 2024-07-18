@@ -26,18 +26,20 @@ it('can create an address', function () {
         ->assertFormFieldExists('first_number')
         ->assertFormFieldExists('second_number')
         ->assertFormFieldExists('apartment')
+        ->assertFormFieldExists('full_address')
         ->assertFormFieldExists('phone')
         ->assertFormFieldExists('state_id')
         ->assertFormFieldExists('city_id')
         ->assertFormFieldExists('observation')
         ->fillForm([
-            'street_type'   => $newData->street_type,
+            'street_type'   => $newData->street_type->value,
             'street_number' => $newData->street_number,
             'first_number'  => $newData->first_number,
             'second_number' => $newData->second_number,
             'apartment'     => $newData->apartment,
+            'full_address'  => $newData->full_address,
             'phone'         => $newData->phone,
-            'state_id'      => $newData->state_id,
+            'state_id'      => $newData->city->state_id,
             'city_id'       => $newData->city_id,
             'observation'   => $newData->observation,
         ])
@@ -51,6 +53,7 @@ it('can create an address', function () {
         'second_number' => $newData->second_number,
         'apartment'     => $newData->apartment,
         'phone'         => $newData->phone,
+        'full_address'  => $newData->full_address,
         'city_id'       => $newData->city_id,
         'observation'   => $newData->observation,
     ]);
@@ -67,6 +70,7 @@ it('can validate create input', function () {
             'second_number' => null,
             'phone'         => null,
             'city_id'       => null,
+            'full_address'  => null,
         ])
         ->call('create')
         ->assertHasFormErrors([
@@ -76,6 +80,7 @@ it('can validate create input', function () {
             'second_number' => 'required',
             'phone'         => 'required',
             'city_id'       => 'required',
+            'full_address'  => 'required',
         ])
         ->fillForm([
             'street_number' => str_repeat('0', 32),
@@ -83,6 +88,7 @@ it('can validate create input', function () {
             'second_number' => str_repeat('0', 32),
             'phone'         => str_repeat('0', 32),
             'apartment'     => str_repeat('0', 256),
+            'full_address'  => str_repeat('0', 256),
         ])
         ->call('create')
         ->assertHasFormErrors([
@@ -91,6 +97,7 @@ it('can validate create input', function () {
             'second_number' => 'max',
             'phone'         => 'max',
             'apartment'     => 'max',
+            'full_address'  => 'max',
         ]);
 
     $this->assertAuthenticated();

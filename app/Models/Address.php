@@ -22,6 +22,7 @@ class Address extends Model
         'second_number',
         'apartment',
         'phone',
+        'full_address',
         'observation',
         'location',
     ];

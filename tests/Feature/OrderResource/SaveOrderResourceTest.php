@@ -82,6 +82,30 @@ it('can validate save input', function () {
     $this->assertAuthenticated();
 });
 
+it('can execute address actions correctly', function () {
+    $order = Order::factory()->create();
+
+    livewire(EditOrder::class, [
+        'record' => $order->getRouteKey(),
+    ])
+        ->assertFormComponentActionExists('address_id', 'createAddress')
+        ->assertFormComponentActionEnabled('address_id', 'createAddress')
+        ->assertFormComponentActionExists('address_id', 'editAddress')
+        ->assertFormComponentActionEnabled('address_id', 'editAddress')
+        ->assertFormComponentActionHasUrl(
+            'address_id',
+            'createAddress',
+            route('filament.admin.resources.addresses.create')
+        )
+        ->assertFormComponentActionHasUrl(
+            'address_id',
+            'editAddress',
+            route('filament.admin.resources.addresses.edit', ['record' => $order->address])
+        );
+
+    $this->assertAuthenticated();
+});
+
 it('can delete an order', function () {
     $order = Order::factory()->create();
 

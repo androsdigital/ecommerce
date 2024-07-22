@@ -8,10 +8,8 @@ use Filament\Actions\DeleteAction;
 use function Pest\Livewire\livewire;
 
 it('can render edit page', function () {
-    $order = Order::factory()->create();
-
     $this->get(OrderResource::getUrl('edit', [
-        'record' => $order,
+        'record' => Order::factory()->create(),
     ]))->assertSuccessful();
 
     $this->assertAuthenticated();
@@ -50,6 +48,23 @@ it('can save a order', function () {
         'notes'       => $newData->notes,
         'address_id'  => $newData->address_id,
     ]);
+
+    $this->assertAuthenticated();
+});
+
+it('can retrieve data', function () {
+    $order = Order::factory()->create();
+
+    livewire(EditOrder::class, [
+        'record' => $order->getRouteKey(),
+    ])
+        ->assertFormSet([
+            'customer_id' => $order->customer_id,
+            'number'      => $order->number,
+            'status'      => $order->status->value,
+            'notes'       => $order->notes,
+            'address_id'  => $order->address_id,
+        ]);
 
     $this->assertAuthenticated();
 });

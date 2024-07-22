@@ -3,6 +3,7 @@
 use App\Filament\Resources\ProductResource;
 use App\Filament\Resources\ProductResource\Pages\EditProduct;
 use App\Models\Product;
+use Filament\Actions\DeleteAction;
 
 use function Pest\Livewire\livewire;
 
@@ -10,32 +11,6 @@ it('can render edit page', function () {
     $this->get(ProductResource::getUrl('edit', [
         'record' => Product::factory()->create(),
     ]))->assertSuccessful();
-
-    $this->assertAuthenticated();
-});
-
-it('can retrieve data', function () {
-    $product = Product::factory()->create();
-
-    livewire(EditProduct::class, [
-        'record' => $product->getRouteKey(),
-    ])
-        ->assertFormSet([
-            'name'                  => $product->name,
-            'slug'                  => $product->slug,
-            'category_id'           => $product->category_id,
-            'description'           => $product->description,
-            'price'                 => $product->price,
-            'price_before_discount' => $product->price_before_discount,
-        ])
-        ->assertSeeHtml([ // This is because livewire render with UUID keys
-            $product->features[0]['name'],
-            $product->features[0]['value'],
-            $product->comments[0]['comment'],
-            $product->features[1]['name'],
-            $product->features[1]['value'],
-            $product->comments[1]['comment'],
-        ]);
 
     $this->assertAuthenticated();
 });
@@ -76,6 +51,32 @@ it('can save a product', function () {
     $this->assertEquals($newData->features[1], $product->features[3]);
     $this->assertEquals($newData->comments[0], $product->comments[2]);
     $this->assertEquals($newData->comments[1], $product->comments[3]);
+
+    $this->assertAuthenticated();
+});
+
+it('can retrieve data', function () {
+    $product = Product::factory()->create();
+
+    livewire(EditProduct::class, [
+        'record' => $product->getRouteKey(),
+    ])
+        ->assertFormSet([
+            'name'                  => $product->name,
+            'slug'                  => $product->slug,
+            'category_id'           => $product->category_id,
+            'description'           => $product->description,
+            'price'                 => $product->price,
+            'price_before_discount' => $product->price_before_discount,
+        ])
+        ->assertSeeHtml([ // This is because livewire render with UUID keys
+            $product->features[0]['name'],
+            $product->features[0]['value'],
+            $product->comments[0]['comment'],
+            $product->features[1]['name'],
+            $product->features[1]['value'],
+            $product->comments[1]['comment'],
+        ]);
 
     $this->assertAuthenticated();
 });
@@ -163,6 +164,20 @@ it('can validate edit input', function () {
         ->assertHasFormErrors([
             'features.0.name' => 'alpha',
         ]);
+
+    $this->assertAuthenticated();
+});
+
+it('can delete a product', function () {
+    $address = Product::factory()->create();
+
+    livewire(EditProduct::class, [
+        'record' => $address->getRouteKey(), 0,
+    ])
+        ->callAction(DeleteAction::class)
+        ->assertActionHalted(DeleteAction::class);
+
+    $this->assertModelMissing($address);
 
     $this->assertAuthenticated();
 });

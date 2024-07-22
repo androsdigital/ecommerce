@@ -8,10 +8,8 @@ use Filament\Actions\DeleteAction;
 use function Pest\Livewire\livewire;
 
 it('can render edit page', function () {
-    $address = Address::factory()->create();
-
     $this->get(AddressResource::getUrl('edit', [
-        'record' => $address,
+        'record' => Address::factory()->create(),
     ]))->assertSuccessful();
 
     $this->assertAuthenticated();
@@ -19,7 +17,6 @@ it('can render edit page', function () {
 
 it('can save an address', function () {
     $address = Address::factory()->create();
-
     $newData = Address::factory()->make();
 
     livewire(EditAddress::class, [
@@ -65,6 +62,29 @@ it('can save an address', function () {
         'phone'         => $newData->phone,
         'observation'   => $newData->observation,
     ]);
+
+    $this->assertAuthenticated();
+});
+
+it('can retrieve data', function () {
+    $address = Address::factory()->create();
+
+    livewire(EditAddress::class, [
+        'record' => $address->getRouteKey(),
+    ])
+        ->assertFormSet([
+            'state_id'      => $address->city->state_id,
+            'city_id'       => $address->city_id,
+            'street_type'   => $address->street_type->value,
+            'street_number' => $address->street_number,
+            'first_number'  => $address->first_number,
+            'second_number' => $address->second_number,
+            'apartment'     => $address->apartment,
+            'building'      => $address->building,
+            'phone'         => $address->phone,
+            'full_address'  => $address->full_address,
+            'observation'   => $address->observation,
+        ]);
 
     $this->assertAuthenticated();
 });

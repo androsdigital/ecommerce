@@ -201,11 +201,11 @@ class OrderResource extends Resource
 
             Placeholder::make('created_at')
                 ->label('Creado')
-                ->content(fn (Order $record): string => $record->created_at?->diffForHumans()),
+                ->content(fn (Order $record): string => $record->created_at?->translatedFormat('D M j, Y g:i A')),
 
             Placeholder::make('updated_at')
                 ->label('Modificado')
-                ->content(fn (Order $record): string => $record->updated_at?->diffForHumans()),
+                ->content(fn (Order $record): string => $record->updated_at->translatedFormat('D M j, Y g:i A')),
         ];
     }
 
@@ -284,15 +284,15 @@ class OrderResource extends Resource
                 ->summarize(Sum::make('sum')->label('Total')->numeric(locale: 'es')),
 
             TextColumn::make('created_at')
-                ->label('Creado el')
+                ->label('Creado')
                 ->toggleable(isToggledHiddenByDefault: true)
-                ->date()
+                ->dateTime()
                 ->sortable(),
 
             TextColumn::make('updated_at')
-                ->label('Actualizado el')
+                ->label('Actualizado')
                 ->toggleable(isToggledHiddenByDefault: true)
-                ->date()
+                ->dateTime()
                 ->sortable(),
         ];
     }

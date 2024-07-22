@@ -21,7 +21,6 @@ class CityFactory extends Factory
         return [
             'state_id' => $state->id,
             'name'     => fake()->word(),
-            'code'     => fake()->numerify('CIU-####'),
         ];
     }
 }

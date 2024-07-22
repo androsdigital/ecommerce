@@ -17,7 +17,6 @@ class StateFactory extends Factory
     {
         return [
             'name' => fake()->word(),
-            'code' => fake()->numerify('DEP-##'),
         ];
     }
 }

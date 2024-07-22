@@ -9,7 +9,7 @@ use Filament\Tables\Actions\DeleteBulkAction;
 
 use function Pest\Livewire\livewire;
 
-it('can render order items relation manager', function () {
+it('can render order items', function () {
     $order = Order::factory()
         ->has(OrderItem::factory()->count(10))
         ->create();
@@ -23,7 +23,7 @@ it('can render order items relation manager', function () {
     $this->assertAuthenticated();
 });
 
-it('can list order items in relation manager', function () {
+it('can list order items', function () {
     $order = Order::factory()
         ->has(OrderItem::factory()->count(10))
         ->create();
@@ -69,7 +69,7 @@ it('can set correct record values', function () {
         ->assertTableColumnStateSet('price', $orderItem->price, record: $orderItem);
 });
 
-it('can sort order items relation manager', function () {
+it('can sort order items', function () {
     $order = Order::factory()
         ->has(OrderItem::factory()->count(10))
         ->create();
@@ -110,7 +110,7 @@ it('can sort order items relation manager', function () {
         ->assertCanSeeTableRecords($orderItems->sortByDesc('shipping_price'), inOrder: true);
 });
 
-it('can delete orders', function () {
+it('can delete order items', function () {
     $order = Order::factory()
         ->has(OrderItem::factory()->count(10))
         ->create();
@@ -126,7 +126,7 @@ it('can delete orders', function () {
     $this->assertModelMissing($orderItem);
 });
 
-it('can bulk delete orders', function () {
+it('can bulk delete order items', function () {
     $order = Order::factory()
         ->has(OrderItem::factory()->count(10))
         ->create();

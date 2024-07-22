@@ -7,10 +7,8 @@ use App\Models\Address;
 use function Pest\Livewire\livewire;
 
 it('can render create page', function () {
-    $address = Address::factory()->create();
-
     $this->get(AddressResource::getUrl('create', [
-        'record' => $address,
+        'record' => Address::factory()->create(),
     ]))->assertSuccessful();
 
     $this->assertAuthenticated();

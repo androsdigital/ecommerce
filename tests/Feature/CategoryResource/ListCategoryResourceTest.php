@@ -3,6 +3,7 @@ CategoryResourceTest.php<?php
 use App\Filament\Resources\CategoryResource;
 use App\Filament\Resources\CategoryResource\Pages\ListCategories;
 use App\Models\Category;
+use Filament\Tables\Actions\DeleteBulkAction;
 
 use function Pest\Livewire\livewire;
 
@@ -68,4 +69,15 @@ it('can sort addresses', function () {
         ->assertCanSeeTableRecords($categories->sortBy('updated_at'), inOrder: true)
         ->sortTable('updated_at', 'desc')
         ->assertCanSeeTableRecords($categories->sortByDesc('updated_at'), inOrder: true);
+});
+
+it('can bulk delete categories', function () {
+    $categories = Category::factory(10)->create();
+
+    livewire(ListCategories::class)
+        ->callTableBulkAction(DeleteBulkAction::class, $categories);
+
+    foreach ($categories as $category) {
+        $this->assertModelMissing($category);
+    }
 });

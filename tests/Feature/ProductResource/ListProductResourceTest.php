@@ -4,6 +4,7 @@ use App\Filament\Resources\ProductResource;
 use App\Filament\Resources\ProductResource\Pages\ListProducts;
 use App\Models\Category;
 use App\Models\Product;
+use Filament\Tables\Actions\DeleteBulkAction;
 
 use function Pest\Livewire\livewire;
 
@@ -80,4 +81,15 @@ it('can sort products', function () {
         ->assertCanSeeTableRecords($products->sortBy('updated_at'), inOrder: true)
         ->sortTable('updated_at', 'desc')
         ->assertCanSeeTableRecords($products->sortByDesc('updated_at'), inOrder: true);
+});
+
+it('can bulk delete products', function () {
+    $products = Product::factory(10)->create();
+
+    livewire(ListProducts::class)
+        ->callTableBulkAction(DeleteBulkAction::class, $products);
+
+    foreach ($products as $product) {
+        $this->assertModelMissing($product);
+    }
 });

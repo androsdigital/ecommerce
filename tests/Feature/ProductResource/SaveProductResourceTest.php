@@ -169,15 +169,15 @@ it('can validate edit input', function () {
 });
 
 it('can delete a product', function () {
-    $address = Product::factory()->create();
+    $product = Product::factory()->create();
 
     livewire(EditProduct::class, [
-        'record' => $address->getRouteKey(), 0,
+        'record' => $product->getRouteKey(),
     ])
         ->callAction(DeleteAction::class)
         ->assertActionHalted(DeleteAction::class);
 
-    $this->assertModelMissing($address);
+    $this->assertModelMissing($product);
 
     $this->assertAuthenticated();
 });

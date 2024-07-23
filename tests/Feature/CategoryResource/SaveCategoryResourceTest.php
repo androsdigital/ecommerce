@@ -3,6 +3,7 @@
 use App\Filament\Resources\CategoryResource;
 use App\Filament\Resources\CategoryResource\Pages\EditCategory;
 use App\Models\Category;
+use Filament\Actions\DeleteAction;
 
 use function Pest\Livewire\livewire;
 
@@ -10,20 +11,6 @@ it('can render edit page', function () {
     $this->get(CategoryResource::getUrl('edit', [
         'record' => Category::factory()->create(),
     ]))->assertSuccessful();
-
-    $this->assertAuthenticated();
-});
-
-it('can retrieve data', function () {
-    $category = Category::factory()->create();
-
-    livewire(EditCategory::class, [
-        'record' => $category->getRouteKey(),
-    ])
-        ->assertFormSet([
-            'name' => $category->name,
-            'slug' => $category->slug,
-        ]);
 
     $this->assertAuthenticated();
 });
@@ -51,6 +38,20 @@ it('can save a category', function () {
     ]);
 });
 
+it('can retrieve data', function () {
+    $category = Category::factory()->create();
+
+    livewire(EditCategory::class, [
+        'record' => $category->getRouteKey(),
+    ])
+        ->assertFormSet([
+            'name' => $category->name,
+            'slug' => $category->slug,
+        ]);
+
+    $this->assertAuthenticated();
+});
+
 it('can validate edit input', function () {
     livewire(EditCategory::class, [
         'record' => Category::factory()->create()->getRouteKey(),
@@ -69,6 +70,20 @@ it('can validate edit input', function () {
         ->assertHasFormErrors([
             'name' => 'max',
         ]);
+
+    $this->assertAuthenticated();
+});
+
+it('can delete a category', function () {
+    $address = Category::factory()->create();
+
+    livewire(EditCategory::class, [
+        'record' => $address->getRouteKey(),
+    ])
+        ->callAction(DeleteAction::class)
+        ->assertActionHalted(DeleteAction::class);
+
+    $this->assertModelMissing($address);
 
     $this->assertAuthenticated();
 });

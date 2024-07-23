@@ -2,11 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\CustomerResource\Pages\CreateCustomer;
 use App\Filament\Resources\CustomerResource\Pages\EditCustomer;
 use App\Filament\Resources\CustomerResource\Pages\ListCustomers;
 use App\Models\Customer;
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -20,6 +18,10 @@ class CustomerResource extends Resource
 {
     protected static ?string $model = Customer::class;
 
+    protected static ?string $modelLabel = 'Comprador';
+
+    protected static ?string $pluralModelLabel = 'Compradores';
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
@@ -27,15 +29,11 @@ class CustomerResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name')
+                    ->label('Nombre')
                     ->required()
                     ->maxLength(255),
                 TextInput::make('email')
                     ->email()
-                    ->required()
-                    ->maxLength(255),
-                DateTimePicker::make('email_verified_at'),
-                TextInput::make('password')
-                    ->password()
                     ->required()
                     ->maxLength(255),
             ]);
@@ -46,17 +44,24 @@ class CustomerResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
+                    ->label('Nombre')
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('email')
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('email_verified_at')
+                    ->label('Email verificado en')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('created_at')
+                    ->label('Creado en')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Modificado en')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -74,9 +79,13 @@ class CustomerResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => ListCustomers::route('/'),
-            'create' => CreateCustomer::route('/create'),
-            'edit'   => EditCustomer::route('/{record}/edit'),
+            'index' => ListCustomers::route('/'),
+            'edit'  => EditCustomer::route('/{record}/edit'),
         ];
+    }
+
+    public static function canCreate(): bool
+    {
+        return false;
     }
 }

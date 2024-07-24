@@ -6,6 +6,7 @@ use App\Enums\StreetType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Address extends Model
@@ -48,5 +49,10 @@ class Address extends Model
     public function stockItems(): HasMany
     {
         return $this->hasMany(StockItem::class);
+    }
+
+    public function customers(): BelongsToMany
+    {
+        return $this->belongsToMany(Customer::class);
     }
 }

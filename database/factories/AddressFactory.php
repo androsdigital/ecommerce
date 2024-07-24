@@ -23,7 +23,6 @@ class AddressFactory extends Factory
 
         return [
             'city_id'       => $city->id,
-            'customer_id'   => null,
             'street_type'   => $streetType->value,
             'street_number' => $streetNumber,
             'first_number'  => $firstNumber,

@@ -21,6 +21,7 @@ class CustomerFactory extends Factory
         return [
             'name'              => fake()->name(),
             'email'             => fake()->unique()->safeEmail(),
+            'phone'             => fake()->unique()->phoneNumber(),
             'email_verified_at' => now(),
             'password'          => Hash::make('password'),
             'remember_token'    => Str::random(10),
@@ -31,7 +32,7 @@ class CustomerFactory extends Factory
     {
         return $this->afterCreating(function (Customer $customer) {
             if ($customer->addresses()->count() === 0) {
-                $customer->addresses()->save(Address::factory()->create());
+                $customer->addresses()->saveMany(Address::factory(3)->create());
             }
         });
     }

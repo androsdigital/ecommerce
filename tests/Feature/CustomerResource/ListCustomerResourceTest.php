@@ -21,7 +21,8 @@ it('can list customers', function () {
         ->assertCountTableRecords(10)
         ->assertCanRenderTableColumn('name')
         ->assertCanRenderTableColumn('email')
-        ->assertCanRenderTableColumn('email_verified_at')
+        ->assertCanRenderTableColumn('phone')
+        ->assertCanNotRenderTableColumn('email_verified_at')
         ->assertCanNotRenderTableColumn('created_at')
         ->assertCanNotRenderTableColumn('updated_at');
 
@@ -36,6 +37,7 @@ it('can set correct record values', function () {
     livewire(ListCustomers::class)
         ->assertTableColumnStateSet('name', $customer->name, record: $customer)
         ->assertTableColumnStateSet('email', $customer->email, record: $customer)
+        ->assertTableColumnStateSet('phone', $customer->phone, record: $customer)
         ->assertTableColumnStateSet('email_verified_at', $customer->email_verified_at, record: $customer)
         ->assertTableColumnStateSet('created_at', $customer->created_at, record: $customer)
         ->assertTableColumnStateSet('updated_at', $customer->updated_at, record: $customer);
@@ -53,7 +55,10 @@ it('can search customers', function () {
         ->assertCountTableRecords($customers->where('name', $customer->name)->count())
         ->searchTable($customer->email)
         ->assertCanSeeTableRecords($customers->where('email', $customer->email))
-        ->assertCountTableRecords($customers->where('email', $customer->email)->count());
+        ->assertCountTableRecords($customers->where('email', $customer->email)->count())
+        ->searchTable($customer->phone)
+        ->assertCanSeeTableRecords($customers->where('phone', $customer->phone))
+        ->assertCountTableRecords($customers->where('phone', $customer->phone)->count());
 
     $this->assertAuthenticated();
 });
@@ -70,6 +75,10 @@ it('can sort customers', function () {
         ->assertCanSeeTableRecords($customers->sortBy('email'), inOrder: true)
         ->sortTable('email', 'desc')
         ->assertCanSeeTableRecords($customers->sortByDesc('email'), inOrder: true)
+        ->sortTable('phone')
+        ->assertCanSeeTableRecords($customers->sortBy('phone'), inOrder: true)
+        ->sortTable('phone', 'desc')
+        ->assertCanSeeTableRecords($customers->sortByDesc('phone'), inOrder: true)
         ->sortTable('email_verified_at')
         ->assertCanSeeTableRecords($customers->sortBy('email_verified_at'), inOrder: true)
         ->sortTable('email_verified_at', 'desc')

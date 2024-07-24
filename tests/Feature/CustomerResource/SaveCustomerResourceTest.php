@@ -28,6 +28,7 @@ it('can save a customer', function () {
         ->fillForm([
             'name'  => $newData->name,
             'email' => $newData->email,
+            'phone' => $newData->phone,
         ])
         ->call('save')
         ->assertHasNoFormErrors();
@@ -35,6 +36,7 @@ it('can save a customer', function () {
     $this->assertDatabaseHas(Customer::class, [
         'name'  => $newData->name,
         'email' => $newData->email,
+        'phone' => $newData->phone,
     ]);
 
     $this->assertAuthenticated();
@@ -49,6 +51,7 @@ it('can retrieve data', function () {
         ->assertFormSet([
             'name'  => $customer->name,
             'email' => $customer->email,
+            'phone' => $customer->phone,
         ]);
 
     $this->assertAuthenticated();
@@ -63,20 +66,24 @@ it('can validate save input', function () {
         ->fillForm([
             'name'  => null,
             'email' => null,
+            'phone' => null,
         ])
         ->call('save')
         ->assertHasFormErrors([
             'name'  => 'required',
             'email' => 'required',
+            'phone' => 'required',
         ])
         ->fillForm([
             'name'  => str_repeat('0', 256),
             'email' => str_repeat('0', 256),
+            'phone' => str_repeat('0', 256),
         ])
         ->call('save')
         ->assertHasFormErrors([
             'name'  => 'max',
             'email' => 'max',
+            'phone' => 'max',
         ])
         ->fillForm([
             'email' => 'no-email',

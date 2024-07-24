@@ -37,6 +37,10 @@ class CustomerResource extends Resource
                     ->email()
                     ->required()
                     ->maxLength(255),
+                TextInput::make('phone')
+                    ->label('Teléfono')
+                    ->required()
+                    ->maxLength(255),
             ]);
     }
 
@@ -51,11 +55,15 @@ class CustomerResource extends Resource
                 TextColumn::make('email')
                     ->sortable()
                     ->searchable(),
+                TextColumn::make('phone')
+                    ->label('Teléfono')
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('email_verified_at')
                     ->label('Email verificado en')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->label('Creado en')
                     ->dateTime()

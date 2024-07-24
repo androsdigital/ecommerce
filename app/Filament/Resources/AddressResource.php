@@ -65,6 +65,7 @@ class AddressResource extends Resource
                 Select::make('state_id')
                     ->label('Departamento')
                     ->native(false)
+                    ->live()
                     ->required()
                     ->dehydrated(false)
                     ->options(State::pluck('name', 'id'))
@@ -76,6 +77,7 @@ class AddressResource extends Resource
                     ->searchable()
                     ->label('Ciudad')
                     ->native(false)
+                    ->live()
                     ->required()
                     ->options(function (?Address $record, Get $get, Set $set) {
                         if (! is_null($record) && $get('state_id') === null) {

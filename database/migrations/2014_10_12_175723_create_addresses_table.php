@@ -2,7 +2,6 @@
 
 use App\Enums\StreetType;
 use App\Models\City;
-use App\Models\Customer;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,7 +13,6 @@ return new class extends Migration
         Schema::create('addresses', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(City::class)->constrained();
-            $table->foreignIdFor(Customer::class)->nullable();
 
             $table->enum('street_type', StreetType::values())->default(StreetType::Calle);
             $table->string('street_number', 31);

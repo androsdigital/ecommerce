@@ -31,7 +31,7 @@ class CustomerFactory extends Factory
     {
         return $this->afterCreating(function (Customer $customer) {
             if ($customer->addresses()->count() === 0) {
-                $customer->addresses()->save(Address::factory()->create());
+                $customer->addresses()->saveMany(Address::factory(3)->create());
             }
         });
     }

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -41,11 +41,11 @@ class Customer extends Authenticatable
     ];
 
     /**
-     * @return HasMany<Address>
+     * @return BelongsToMany<Address>
      */
-    public function addresses(): HasMany
+    public function addresses(): BelongsToMany
     {
-        return $this->hasMany(Address::class);
+        return $this->belongsToMany(Address::class);
     }
 
     public function canAccessPanel(Panel $panel): bool

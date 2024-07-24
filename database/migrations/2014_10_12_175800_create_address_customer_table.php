@@ -11,8 +11,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('address_customer', function (Blueprint $table) {
-            $table->foreignIdFor(Address::class)->constrained();
-            $table->foreignIdFor(Customer::class);
+            $table->foreignIdFor(Address::class)->constrained()->CascadeOnDelete();
+            $table->foreignIdFor(Customer::class)->constrained()->CascadeOnDelete();
         });
     }
 

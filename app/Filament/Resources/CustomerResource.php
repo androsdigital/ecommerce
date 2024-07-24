@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CustomerResource\Pages\EditCustomer;
 use App\Filament\Resources\CustomerResource\Pages\ListCustomers;
+use App\Filament\Resources\CustomerResource\RelationManagers\AddressRelationManager;
 use App\Models\Customer;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -74,6 +75,13 @@ class CustomerResource extends Resource
                     DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            AddressRelationManager::class,
+        ];
     }
 
     public static function getPages(): array

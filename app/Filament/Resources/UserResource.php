@@ -2,17 +2,26 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UserResource\Pages;
+use App\Filament\Resources\UserResource\Pages\CreateUser;
+use App\Filament\Resources\UserResource\Pages\EditUser;
+use App\Filament\Resources\UserResource\Pages\ListUsers;
 use App\Models\User;
-use Filament\Forms;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Hash;
 
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
+
+    protected static ?string $modelLabel = 'Usuario';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -20,18 +29,31 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
+                    ->label('Nombre')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('email')
+
+                TextInput::make('email')
                     ->email()
                     ->required()
                     ->maxLength(255),
-                Forms\Components\DateTimePicker::make('email_verified_at'),
-                Forms\Components\TextInput::make('password')
+
+                TextInput::make('password')
+                    ->label('Contraseña')
                     ->password()
-                    ->required()
+                    ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
+                    ->dehydrated(fn (?string $state): bool => filled($state))
+                    ->required(fn (string $operation): bool => $operation === 'create')
                     ->maxLength(255),
+
+                TextInput::make('password_confirmation')
+                    ->label('Confirmación de la Contraseña')
+                    ->password()
+                    ->required(fn (Get $get): bool => filled($get('password')))
+                    ->maxLength(255)
+                    ->dehydrated(false)
+                    ->same('password'),
             ]);
     }
 
@@ -39,48 +61,49 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
+                    ->label('Nombre')
+                    ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email')
+
+                TextColumn::make('email')
+                    ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email_verified_at')
-                    ->dateTime()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+
+                TextColumn::make('email_verified_at')
+                    ->label('Email verificado en')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+
+                TextColumn::make('created_at')
+                    ->label('Creado en')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
-                //
+
+                TextColumn::make('updated_at')
+                    ->label('Modificado en')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'edit'   => Pages\EditUser::route('/{record}/edit'),
+            'index'  => ListUsers::route('/'),
+            'create' => CreateUser::route('/create'),
+            'edit'   => EditUser::route('/{record}/edit'),
         ];
     }
 }

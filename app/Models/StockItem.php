@@ -5,8 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class StockItem extends Model implements HasMedia
 {
@@ -26,6 +28,15 @@ class StockItem extends Model implements HasMedia
         'price_before_discount',
         'discount',
     ];
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('front_thumb')
+            ->fit(Fit::Crop, 450, 300);
+
+        $this->addMediaConversion('front_large')
+            ->fit(Fit::Crop, 600);
+    }
 
     public function size(): BelongsTo
     {

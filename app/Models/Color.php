@@ -15,18 +15,18 @@ class Color extends Model
         'name',
     ];
 
-    public function products(): HasManyThrough
-    {
-        return $this->hasManyThrough(Product::class, StockItem::class);
-    }
-
     public function stockItems(): HasMany
     {
         return $this->hasMany(StockItem::class);
     }
 
-    public function sizes(): HasManyThrough
-    {
-        return $this->hasManyThrough(Size::class, StockItem::class);
-    }
+    //    public function products(): HasManyThrough
+    //    {
+    //        return $this->hasManyThrough(Product::class, StockItem::class);
+    //    }
+    //
+    //    public function sizes(): HasManyThrough
+    //    {
+    //        return $this->hasManyThrough(Size::class, StockItem::class);
+    //    }
 }

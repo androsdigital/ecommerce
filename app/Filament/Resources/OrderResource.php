@@ -6,7 +6,6 @@ use App\Enums\OrderStatus;
 use App\Filament\Resources\OrderResource\Pages\EditOrder;
 use App\Filament\Resources\OrderResource\Pages\ListOrders;
 use App\Filament\Resources\OrderResource\RelationManagers\OrderItemRelationManager;
-use App\Filament\Resources\OrderResource\RelationManagers\PaymentsRelationManager;
 use App\Filament\Resources\OrderResource\Widgets\OrderStats;
 use App\Models\Order;
 use App\Traits\HasAddress;
@@ -89,7 +88,6 @@ class OrderResource extends Resource
     {
         return [
             OrderItemRelationManager::class,
-            //            PaymentsRelationManager::class,
         ];
     }
 

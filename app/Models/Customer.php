@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -47,10 +46,5 @@ class Customer extends Authenticatable
     public function addresses(): BelongsToMany
     {
         return $this->belongsToMany(Address::class);
-    }
-
-    public function canAccessPanel(Panel $panel): bool
-    {
-        return false;
     }
 }

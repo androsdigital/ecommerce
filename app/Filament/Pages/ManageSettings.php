@@ -3,7 +3,9 @@
 namespace App\Filament\Pages;
 
 use App\Settings\GeneralSettings;
-use Filament\Forms;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Pages\SettingsPage;
 
@@ -19,14 +21,14 @@ class ManageSettings extends SettingsPage
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('title')
+                TextInput::make('title')
                     ->label('Título'),
-                Forms\Components\TextInput::make('subTitle')
+                TextInput::make('subTitle')
                     ->label('Subtítulo'),
-                Forms\Components\Textarea::make('about')
+                Textarea::make('about')
                     ->label('Acerca de')
                     ->columnSpanFull(),
-                Forms\Components\FileUpload::make('logo')
+                FileUpload::make('logo')
                     ->columnSpanFull(),
             ]);
     }

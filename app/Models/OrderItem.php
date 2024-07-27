@@ -19,10 +19,10 @@ class OrderItem extends Model
         'quantity',
     ];
 
-    public function order(): BelongsTo
-    {
-        return $this->belongsTo(Order::class);
-    }
+    //    public function order(): BelongsTo
+    //    {
+    //        return $this->belongsTo(Order::class);
+    //    }
 
     public function stockItem(): BelongsTo
     {

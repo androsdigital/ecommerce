@@ -15,18 +15,18 @@ class Size extends Model
         'name',
     ];
 
-    public function products(): HasManyThrough
-    {
-        return $this->hasManyThrough(Product::class, StockItem::class);
-    }
-
     public function stockItems(): HasMany
     {
         return $this->hasMany(StockItem::class);
     }
 
-    public function colors(): HasManyThrough
-    {
-        return $this->hasManyThrough(Color::class, StockItem::class);
-    }
+    //    public function products(): HasManyThrough
+    //    {
+    //        return $this->hasManyThrough(Product::class, StockItem::class);
+    //    }
+    //
+    //    public function colors(): HasManyThrough
+    //    {
+    //        return $this->hasManyThrough(Color::class, StockItem::class);
+    //    }
 }

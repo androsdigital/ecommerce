@@ -41,18 +41,18 @@ class Address extends Model
         return $this->belongsTo(City::class);
     }
 
-    public function orders(): HasMany
-    {
-        return $this->hasMany(Order::class);
-    }
-
-    public function stockItems(): HasMany
-    {
-        return $this->hasMany(StockItem::class);
-    }
-
-    public function customers(): BelongsToMany
-    {
-        return $this->belongsToMany(Customer::class);
-    }
+    //    public function orders(): HasMany
+    //    {
+    //        return $this->hasMany(Order::class);
+    //    }
+    //
+    //    public function stockItems(): HasMany
+    //    {
+    //        return $this->hasMany(StockItem::class);
+    //    }
+    //
+    //    public function customers(): BelongsToMany
+    //    {
+    //        return $this->belongsToMany(Customer::class);
+    //    }
 }

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Contracts\View\View;
 
-class ProductController extends Controller
+class StockItemController extends Controller
 {
     public function __invoke(Product $product): View
     {

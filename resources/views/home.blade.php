@@ -23,7 +23,7 @@
                         <div class="text-center">
                             <!-- stockItem name-->
                             <h5 class="fw-bolder">
-                                <a href="{{ route('stockItem', $stockItem) }}" class="link">{{ $stockItem->name }}</a>
+                                <a href="{{ route('stockItem', $stockItem) }}" class="link">{{ $stockItem->product->name }}</a>
                             </h5>
                             <!-- stockItem price-->
                             @if($stockItem->price_before_discount)

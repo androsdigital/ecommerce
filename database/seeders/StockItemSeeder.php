@@ -9,6 +9,6 @@ class StockItemSeeder extends Seeder
 {
     public function run(): void
     {
-        StockItem::factory(1000)->create();
+        StockItem::factory(100)->create();
     }
 }

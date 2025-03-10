@@ -5,37 +5,37 @@
     </x-slot>
 
     <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
-        @foreach($products as $product)
+        @foreach($stockItems as $stockItem)
             <div class="col mb-5">
                 <div class="card h-100">
-                    @if($product->price_before_discount)
+                    @if($stockItem->price_before_discount)
                         <!-- Sale badge-->
                         <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">
                             Se Vende
                         </div>
                     @endif
-                    <!-- Product image-->
-                    <a href="{{ route('product', $product) }}">
-                        <img class="card-img-top" src="{{ $product->getFirstMediaUrl(conversionName: 'thumb') }}" alt="{{ $product->name }}" />
+                    <!-- stockItem image-->
+                    <a href="{{ route('stockItem', $stockItem) }}">
+                        <img class="card-img-top" src="{{ $stockItem->getFirstMediaUrl(conversionName: 'thumb') }}" alt="{{ $stockItem->name }}" />
                     </a>
-                    <!-- Product details-->
+                    <!-- stockItem details-->
                     <div class="card-body p-4">
                         <div class="text-center">
-                            <!-- Product name-->
+                            <!-- stockItem name-->
                             <h5 class="fw-bolder">
-                                <a href="{{ route('product', $product) }}" class="link">{{ $product->name }}</a>
+                                <a href="{{ route('stockItem', $stockItem) }}" class="link">{{ $stockItem->product->name }}</a>
                             </h5>
-                            <!-- Product price-->
-                            @if($product->price_before_discount)
-                                <span class="text-muted text-decoration-line-through">${{ $product->price_before_discount }}</span> ${{ number_format($product->price, 2) }}
+                            <!-- stockItem price-->
+                            @if($stockItem->price_before_discount)
+                                <span class="text-muted text-decoration-line-through">${{ $stockItem->price_before_discount }}</span> ${{ number_format($stockItem->price, 2) }}
                             @else
-                                ${{ $product->price, 2 }}
+                                ${{ $stockItem->price, 2 }}
                             @endif
                         </div>
                     </div>
-                    <!-- Product actions-->
+                    <!-- stockItem actions-->
                     <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                        <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="{{ route('product', $product) }}">Ver Producto</a>
+                        <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="{{ route('stockItem', $stockItem) }}">Ver Producto</a>
                         </div>
                     </div>
                 </div>

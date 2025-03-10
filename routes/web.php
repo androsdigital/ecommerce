@@ -3,7 +3,7 @@
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
-use App\Http\Controllers\ProductController;
+use App\Http\Controllers\StockItemController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,6 +20,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', HomeController::class)->name('home');
 Route::view('/about', 'about')->name('about');
 Route::get('category/{category:slug}', CategoryController::class)->name('category');
-Route::get('product/{product:slug}', ProductController::class)->name('product');
+Route::get('stockItem/{stockItem}', StockItemController::class)->name('stockItem');
 Route::post('order/{product}', [OrderController::class, 'store'])->name('order.store');
 Route::get('order/{order}', [OrderController::class, 'show'])->name('order.show');
